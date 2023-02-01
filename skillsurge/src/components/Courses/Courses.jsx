@@ -6,9 +6,7 @@ import {
   HStack,
   Input,
   Stack,
-  Box,
   Image,
-  Badge,
   Text,
   VStack,
 } from '@chakra-ui/react';
@@ -90,9 +88,11 @@ const Courses = () => {
     'Game Development',
   ];
 
+  console.log(category);
+
   return (
     <Container minH={'95vh'} maxW={'container.lg'} paddingY={'8'}>
-      <Heading children="All Courses" m={'8'} />
+      <Heading textTransform={'uppercase'} children="All Courses" m={'8'} />
 
       <Input
         value={keyword}
