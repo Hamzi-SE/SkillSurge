@@ -40,7 +40,7 @@ const Header = () => {
       <ColorModeSwitcher />
 
       <Button
-        className="header-menu-icon"
+        zIndex={'overlay'}
         onClick={onOpen}
         colorScheme={'yellow'}
         width="12"

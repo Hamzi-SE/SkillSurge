@@ -9,6 +9,7 @@ export const ColorModeSwitcher = props => {
 
   return (
     <IconButton
+      zIndex={'overlay'}
       className="header-theme-icon"
       size="md"
       fontSize="lg"

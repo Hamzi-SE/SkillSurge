@@ -59,11 +59,3 @@
 .course:hover {
   transform: translateY(-10px);
 }
-
-.header-menu-icon {
-  z-index: 1;
-}
-
-.header-theme-icon {
-  z-index: 1;
-}
