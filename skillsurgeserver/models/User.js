@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import validator from "validator";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
+import crypto from "crypto"; // no need to install this, it's by default in Node
 
 const schema = new mongoose.Schema(
 	{
@@ -51,8 +52,8 @@ const schema = new mongoose.Schema(
 			},
 		],
 
-		ResetPasswordToken: String,
-		ResetPasswordExpire: String,
+		resetPasswordToken: String,
+		resetPasswordExpire: String,
 	},
 	{
 		timestamps: true,
@@ -75,6 +76,17 @@ schema.methods.getJWTToken = function () {
 	return jwt.sign({ _id: this._id }, process.env.JWT_SECRET, {
 		expiresIn: process.env.JWT_EXPIRES_TIME,
 	});
+};
+
+schema.methods.getResetPasswordToken = function () {
+	const resetToken = crypto.randomBytes(20).toString("hex");
+
+	this.resetPasswordToken = crypto.createHash("sha256").update(resetToken).digest("hex");
+
+	// token will expire in 30 minutes
+	this.resetPasswordExpire = Date.now() + 30 * 60 * 1000; // token will expire in 30 minutes
+
+	return resetToken;
 };
 
 export default mongoose.model("User", schema);
