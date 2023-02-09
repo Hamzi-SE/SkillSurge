@@ -5,28 +5,35 @@ import User from "../models/User.js";
 import Course from "../models/Course.js";
 import { sendEmail } from "../utils/sendEmail.js";
 import crypto from "crypto";
+import cloudinary from "cloudinary";
+import getDataUri from "../utils/dataUri.js";
 
 export const register = catchAsyncError(async (req, res, next) => {
 	const { name, email, password } = req.body;
+	const file = req.file;
 
-	// const file = req.file;
-
-	if (!name || !email || !password) return next(new ErrorHandler("Please enter all fields", 400));
+	if (!name || !email || !password || !file) return next(new ErrorHandler("Please enter all fields", 400));
 
 	let user = await User.findOne({ email });
 
 	if (user) return next(new ErrorHandler("User already exists", 409)); // 409 -> Conflict
 
-	// Upload file on cloudinary
+	const fileUri = getDataUri(file);
+
+	const result = await cloudinary.v2.uploader.upload(fileUri.content, {
+		folder: "skillsurge",
+	});
+
+	const avatar = {
+		public_id: result.public_id,
+		url: result.secure_url,
+	};
 
 	user = await User.create({
 		name,
 		email,
 		password,
-		avatar: {
-			public_id: "tempID",
-			url: "tempURL",
-		},
+		avatar,
 	});
 
 	sendToken(res, user, "Registered successfully", 201);
@@ -34,8 +41,6 @@ export const register = catchAsyncError(async (req, res, next) => {
 
 export const login = catchAsyncError(async (req, res, next) => {
 	const { email, password } = req.body;
-
-	// const file = req.file;
 
 	if (!email || !password) return next(new ErrorHandler("Please enter email and password", 400));
 
@@ -72,6 +77,31 @@ export const getMyProfile = catchAsyncError(async (req, res, next) => {
 		success: true,
 		user,
 	});
+});
+
+export const deleteMyProfile = catchAsyncError(async (req, res, next) => {
+	const user = await User.findById(req.user.id);
+
+	if (user.avatar.public_id) {
+		await cloudinary.v2.uploader.destroy(user.avatar.public_id);
+	}
+
+	// Cancel subscription
+
+	await user.remove();
+
+	res
+		.status(200)
+		.cookie("token", null, {
+			expires: new Date(Date.now()),
+			httpOnly: true,
+			// secure: true,
+			sameSite: "none",
+		})
+		.json({
+			success: true,
+			message: "Your account has been deleted successfully",
+		});
 });
 
 export const changePassword = catchAsyncError(async (req, res, next) => {
@@ -125,11 +155,20 @@ export const updateProfilePicture = catchAsyncError(async (req, res, next) => {
 
 	if (!file) return next(new ErrorHandler("Please upload a file", 400));
 
-	// Upload file on cloudinary
+	const fileUri = getDataUri(file);
+
+	// delete old profile pic
+	if (user.avatar.public_id) {
+		await cloudinary.v2.uploader.destroy(user.avatar.public_id);
+	}
+
+	const result = await cloudinary.v2.uploader.upload(fileUri.content, {
+		folder: "skillsurge",
+	});
 
 	user.avatar = {
-		public_id: "tempID",
-		url: "tempURL",
+		public_id: result.public_id,
+		url: result.secure_url,
 	};
 
 	await user.save();
@@ -245,5 +284,54 @@ export const removeFromPlaylist = catchAsyncError(async (req, res, next) => {
 	res.status(200).json({
 		success: true,
 		message: "Course removed from playlist",
+	});
+});
+
+// --- Admin Controllers ---
+export const getAllUsers = catchAsyncError(async (req, res, next) => {
+	const users = await User.find();
+
+	res.status(200).json({
+		success: true,
+		users,
+	});
+});
+
+export const updateUserRole = catchAsyncError(async (req, res, next) => {
+	const user = await User.findById(req.params.id);
+
+	if (!user) return next(new ErrorHandler("User not found", 404));
+
+	if (user._id.toString() === req.user._id.toString()) return next(new ErrorHandler("You can not update your own role", 400));
+
+	if (user.role === "user") user.role = "admin";
+	else user.role = "user";
+
+	await user.save();
+
+	res.status(200).json({
+		success: true,
+		message: `${user.name}'s role updated successfully`,
+	});
+});
+
+export const deleteUser = catchAsyncError(async (req, res, next) => {
+	const user = await User.findById(req.params.id);
+
+	if (!user) return next(new ErrorHandler("User not found", 404));
+
+	if (user._id.toString() === req.user._id.toString()) return next(new ErrorHandler("You can not delete your own account", 400));
+
+	if (user.avatar.public_id) {
+		await cloudinary.v2.uploader.destroy(user.avatar.public_id);
+	}
+
+	// Cancel Subscription
+
+	await user.remove();
+
+	res.status(200).json({
+		success: true,
+		message: `${user.name}'s account deleted successfully`,
 	});
 });

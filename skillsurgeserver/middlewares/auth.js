@@ -14,3 +14,11 @@ export const isAuthenticated = catchAsyncError(async (req, res, next) => {
 
 	next();
 });
+
+export const authorizeAdmin = (req, res, next) => {
+	const { role } = req.user;
+
+	if (role !== "admin") return next(new ErrorHandler("Only admin can access this resource", 403));
+
+	next();
+};
