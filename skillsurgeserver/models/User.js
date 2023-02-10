@@ -31,6 +31,11 @@ const schema = new mongoose.Schema(
 		subscription: {
 			id: String,
 			status: String,
+			plan: String,
+			payment_intent: String,
+			createdAt: {
+				type: Date,
+			},
 		},
 		avatar: {
 			public_id: {

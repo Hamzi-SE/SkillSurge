@@ -16,9 +16,11 @@ app.use(cookieParser());
 // Importing & Using Routes
 import courseRoutes from "./routes/courseRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
+import paymentRoutes from "./routes/paymentRoutes.js";
 
 app.use("/api/v1", courseRoutes);
 app.use("/api/v1", userRoutes);
+app.use("/api/v1", paymentRoutes);
 
 // Error Handler (use at the end)
 app.use(ErrorMiddleware);
