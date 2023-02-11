@@ -1,7 +1,7 @@
 import { catchAsyncError } from "../middlewares/catchAsyncError.js";
 import { stripe } from "../server.js";
 import User from "../models/User.js";
-import ErrorHandler from "../utils/errorHandler.js";
+import ErrorHandler from "../utils/ErrorHandler.js";
 
 export const buySubscription = catchAsyncError(async (req, res, next) => {
 	// const { stripeToken } = req.body;  ------- TODO
