@@ -62,7 +62,7 @@ export const logout = catchAsyncError(async (req, res, next) => {
 		.cookie("token", null, {
 			expires: new Date(Date.now()),
 			httpOnly: true,
-			// secure: true,
+			secure: true,
 			sameSite: "none",
 		})
 		.json({
@@ -96,7 +96,7 @@ export const deleteMyProfile = catchAsyncError(async (req, res, next) => {
 		.cookie("token", null, {
 			expires: new Date(Date.now()),
 			httpOnly: true,
-			// secure: true,
+			secure: true,
 			sameSite: "none",
 		})
 		.json({
