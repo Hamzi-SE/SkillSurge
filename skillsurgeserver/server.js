@@ -2,6 +2,8 @@ import app from "./app.js";
 import connectDatabase from "./config/database.js";
 import cloudinary from "cloudinary";
 import Stripe from "stripe";
+import nodeCron from "node-cron";
+import Stats from "./models/Stats.js";
 
 // MongoDB connection
 connectDatabase();
@@ -18,6 +20,16 @@ cloudinary.v2.config({
 	api_secret: process.env.CLOUDINARY_CLIENT_SECRET,
 });
 
+// A cron job to generate new statistics on the first day of each month
+nodeCron.schedule("0 0 0 1 * *", async () => {
+	try {
+		await Stats.create({});
+	} catch (error) {
+		console.log(error);
+	}
+});
+
+// Starting the server
 app.listen(process.env.PORT, () => {
 	console.log(`Server running on port ${process.env.PORT}`);
 });

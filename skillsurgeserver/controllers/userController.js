@@ -2,6 +2,7 @@ import { catchAsyncError } from "../middlewares/catchAsyncError.js";
 import ErrorHandler from "../utils/errorHandler.js";
 import { sendToken } from "../utils/sendToken.js";
 import User from "../models/User.js";
+import Stats from "../models/Stats.js";
 import Course from "../models/Course.js";
 import { sendEmail } from "../utils/sendEmail.js";
 import crypto from "crypto";
@@ -334,4 +335,18 @@ export const deleteUser = catchAsyncError(async (req, res, next) => {
 		success: true,
 		message: `${user.name}'s account deleted successfully`,
 	});
+});
+
+// Watcher (real-time data check in database and triggered when changed)
+User.watch().on("change", async () => {
+	const stats = await Stats.find({}).sort({ createdAt: "desc" }).limit(1);
+
+	const totalSubscribers = await User.countDocuments({ "subscription.status": "active" });
+	const totalUsers = await User.countDocuments();
+
+	stats[0].subscriptions = totalSubscribers;
+	stats[0].users = totalUsers;
+	stats[0].createdAt = new Date(Date.now());
+
+	await stats[0].save();
 });

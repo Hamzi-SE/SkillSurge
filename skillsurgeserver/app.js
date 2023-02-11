@@ -17,10 +17,12 @@ app.use(cookieParser());
 import courseRoutes from "./routes/courseRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import paymentRoutes from "./routes/paymentRoutes.js";
+import otherRoutes from "./routes/otherRoutes.js";
 
 app.use("/api/v1", courseRoutes);
 app.use("/api/v1", userRoutes);
 app.use("/api/v1", paymentRoutes);
+app.use("/api/v1", otherRoutes);
 
 // Error Handler (use at the end)
 app.use(ErrorMiddleware);
