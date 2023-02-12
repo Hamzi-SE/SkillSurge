@@ -10,10 +10,20 @@ import {
 } from '@chakra-ui/react';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { login } from '../../redux/actions/user';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+
+  const dispatch = useDispatch();
+
+  const submitHandler = e => {
+    e.preventDefault();
+
+    dispatch(login(email, password));
+  };
 
   return (
     <Container h={'95vh'}>
@@ -23,7 +33,7 @@ const Login = () => {
           children="Welcome to Skill Surge"
         />
 
-        <form style={{ width: '100%' }}>
+        <form onSubmit={submitHandler} style={{ width: '100%' }}>
           <Box my={'4'}>
             <FormLabel htmlFor="email" children="Email Address" />
             <Input

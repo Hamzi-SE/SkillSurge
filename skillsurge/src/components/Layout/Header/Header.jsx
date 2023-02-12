@@ -13,6 +13,8 @@ import React from 'react';
 import { ColorModeSwitcher } from '../../../ColorModeSwitcher';
 import { RiDashboardFill, RiLogoutBoxLine, RiMenu5Fill } from 'react-icons/ri';
 import { Link } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { logout } from '../../../redux/actions/user';
 
 const LinkButton = ({ url = '/', title = 'Home', onClose }) => {
   return (
@@ -22,17 +24,13 @@ const LinkButton = ({ url = '/', title = 'Home', onClose }) => {
   );
 };
 
-const Header = () => {
+const Header = ({ isAuthenticated = false, user }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
-
-  const isAuthenticated = true;
-  const user = {
-    role: 'admin',
-  };
+  const dispatch = useDispatch();
 
   const logoutHandler = () => {
-    console.log('logout');
     onClose();
+    dispatch(logout());
   };
 
   return (
