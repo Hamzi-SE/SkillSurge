@@ -92,7 +92,7 @@ function App() {
               path="/update-profile"
               element={
                 <ProtectedRoute isAuthenticated={isAuthenticated}>
-                  <UpdateProfile />
+                  <UpdateProfile user={user} />
                 </ProtectedRoute>
               }
             />
@@ -119,8 +119,28 @@ function App() {
                 </ProtectedRoute>
               }
             />
-            <Route path="/forget-password" element={<ForgetPassword />} />
-            <Route path="/reset-password/:token" element={<ResetPassword />} />
+            <Route
+              path="/forget-password"
+              element={
+                <ProtectedRoute
+                  isAuthenticated={!isAuthenticated}
+                  redirect="/profile"
+                >
+                  <ForgetPassword />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/reset-password/:token"
+              element={
+                <ProtectedRoute
+                  isAuthenticated={!isAuthenticated}
+                  redirect="/profile"
+                >
+                  <ResetPassword />
+                </ProtectedRoute>
+              }
+            />
 
             <Route
               path="/subscribe"
