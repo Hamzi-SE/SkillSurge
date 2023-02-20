@@ -1,6 +1,13 @@
 import { server } from '../store';
 import axios from 'axios';
 
+const config = {
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  withCredentials: true,
+};
+
 export const login = (email, password) => async dispatch => {
   try {
     dispatch({ type: 'loginRequest' });
@@ -8,12 +15,7 @@ export const login = (email, password) => async dispatch => {
     const { data } = await axios.post(
       `${server}/login`,
       { email, password },
-      {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        withCredentials: true,
-      }
+      config
     );
 
     dispatch({ type: 'loginSuccess', payload: data });

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Button,
   Container,
@@ -6,74 +6,26 @@ import {
   HStack,
   Input,
   Stack,
-  Image,
   Text,
-  VStack,
 } from '@chakra-ui/react';
-import { Link } from 'react-router-dom';
-
-const CourseCard = ({
-  views,
-  title,
-  imgSrc,
-  id,
-  addToPlaylistHandler,
-  creator,
-  description,
-  lectureCount,
-}) => {
-  return (
-    <VStack className="course" alignItems={['center', 'flex-start']}>
-      <Image src={imgSrc} alt={title} boxSize="60" objectFit={'contain'} />
-      <Heading
-        textAlign={['center', 'left']}
-        maxW="200px"
-        size={'sm'}
-        fontFamily={'sans-serif'}
-        noOfLines={3}
-        children={title}
-      />
-      <Text noOfLines={2} children={description} />
-      <HStack>
-        <Text
-          fontWeight={'bold'}
-          textTransform="uppercase"
-          children={'Creator'}
-        />
-        <Text
-          fontFamily={'body'}
-          textTransform="uppercase"
-          children={creator}
-        />
-      </HStack>
-      <Heading
-        textTransform="uppercase"
-        size={'xs'}
-        textAlign={'center'}
-        children={`Lectures - ${lectureCount}`}
-      />
-      <Heading size={'xs'} textAlign={'center'} children={`Views - ${views}`} />
-      <Stack direction={['column', 'row']} alignItems={'center'}>
-        <Link to={`/course/${id}`}>
-          <Button colorScheme="yellow" children={'View Course'} />
-        </Link>
-        <Button
-          variant={'ghost'}
-          colorScheme="yellow"
-          onClick={() => addToPlaylistHandler(id)}
-          children={'Add to playlist'}
-        />
-      </Stack>
-    </VStack>
-  );
-};
+import CourseCard from './CourseCard';
+import { useDispatch, useSelector } from 'react-redux';
+import { getAllCourses } from '../../redux/actions/course';
+import toast from 'react-hot-toast';
+import { addToPlaylist } from '../../redux/actions/profile';
+import { loadUser } from '../../redux/actions/user';
 
 const Courses = () => {
   const [keyword, setKeyword] = useState('');
   const [category, setCategory] = useState('');
 
-  const addToPlaylistHandler = () => {
-    console.log('Added to playlist');
+  const dispatch = useDispatch();
+  const { loading, courses, error, message } = useSelector(
+    state => state.courses
+  );
+
+  const addToPlaylistHandler = async courseId => {
+    await dispatch(addToPlaylist(courseId));
   };
 
   const categories = [
@@ -88,7 +40,20 @@ const Courses = () => {
     'Game Development',
   ];
 
-  console.log(category);
+  useEffect(() => {
+    dispatch(getAllCourses(category, keyword));
+
+    if (error) {
+      toast.error(error);
+      dispatch({ type: 'clearError' });
+    }
+
+    if (message) {
+      toast.success(message);
+      dispatch({ type: 'clearMessage' });
+      dispatch(loadUser());
+    }
+  }, [dispatch, category, keyword, error, message]);
 
   return (
     <Container minH={'95vh'} maxW={'container.lg'} paddingY={'8'}>
@@ -130,18 +95,24 @@ const Courses = () => {
         alignItems={['center', 'flex-start']}
         marginTop={'10'}
       >
-        <CourseCard
-          title={'MERN Stack Supreme'}
-          imgSrc={
-            'https://cdn.pixabay.com/photo/2020/01/26/20/14/computer-4795762_960_720.jpg'
-          }
-          views={1000}
-          id={1}
-          creator={'John Doe'}
-          description={'Lorem ipsum dolor sit amet.'}
-          lectureCount={10}
-          addToPlaylistHandler={addToPlaylistHandler}
-        />
+        {courses.length > 0 ? (
+          courses?.map(course => (
+            <CourseCard
+              key={course._id}
+              title={course.title}
+              imgSrc={course.poster.url}
+              views={course.views}
+              id={course._id}
+              creator={course.createdBy}
+              description={course.description}
+              lectureCount={course.numOfVideos}
+              addToPlaylistHandler={addToPlaylistHandler}
+              loading={loading}
+            />
+          ))
+        ) : (
+          <Heading children="Courses Not Found" mt={4} />
+        )}
       </Stack>
     </Container>
   );

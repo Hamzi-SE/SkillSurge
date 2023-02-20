@@ -23,7 +23,10 @@ import { Link } from 'react-router-dom';
 import { RiDeleteBin7Fill } from 'react-icons/ri';
 import { fileUploadCSS } from '../Auth/Register';
 import { useDispatch, useSelector } from 'react-redux';
-import { updateProfilePicture } from '../../redux/actions/profile';
+import {
+  removeFromPlaylist,
+  updateProfilePicture,
+} from '../../redux/actions/profile';
 import { loadUser } from '../../redux/actions/user';
 import { toast } from 'react-hot-toast';
 
@@ -31,8 +34,9 @@ const Profile = ({ user }) => {
   const dispatch = useDispatch();
   const { loading, message, error } = useSelector(state => state.profile);
 
-  const removeFromPlaylistHandler = courseId => {
-    console.log(courseId);
+  const removeFromPlaylistHandler = async courseId => {
+    await dispatch(removeFromPlaylist(courseId));
+    dispatch(loadUser());
   };
 
   const changeImageSubmitHandler = async (e, image) => {
@@ -119,14 +123,14 @@ const Profile = ({ user }) => {
 
       <Heading children="Playlist" size={'md'} my="8" />
 
-      {user?.playist?.length > 0 && (
+      {user?.playlist?.length > 0 && (
         <Stack
           direction={['column', 'row']}
           alignItems={'center'}
           flexWrap="wrap"
           p="4"
         >
-          {user?.playist?.map(item => (
+          {user?.playlist?.map(item => (
             <VStack w="48" m="2" key={item.course}>
               <Image boxSize={'full'} objectFit={'contain'} src={item.poster} />
               <HStack>
@@ -136,7 +140,10 @@ const Profile = ({ user }) => {
                   </Button>
                 </Link>
 
-                <Button onClick={() => removeFromPlaylistHandler(item.course)}>
+                <Button
+                  isLoading={loading}
+                  onClick={() => removeFromPlaylistHandler(item.course)}
+                >
                   <RiDeleteBin7Fill />
                 </Button>
               </HStack>

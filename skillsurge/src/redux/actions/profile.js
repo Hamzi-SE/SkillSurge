@@ -1,6 +1,13 @@
 import { server } from '../store';
 import axios from 'axios';
 
+const config = {
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  withCredentials: true,
+};
+
 export const updateProfile = (name, email) => async dispatch => {
   try {
     dispatch({ type: 'updateProfileRequest' });
@@ -11,12 +18,7 @@ export const updateProfile = (name, email) => async dispatch => {
         name,
         email,
       },
-      {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        withCredentials: true,
-      }
+      config
     );
 
     dispatch({ type: 'updateProfileSuccess', payload: data.message });
@@ -35,12 +37,7 @@ export const updateProfilePicture = formData => async dispatch => {
     const { data } = await axios.put(
       `${server}/update-profile-picture`,
       formData,
-      {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-        withCredentials: true,
-      }
+      config
     );
 
     dispatch({ type: 'updateProfilePictureSuccess', payload: data.message });
@@ -62,12 +59,7 @@ export const changePassword = (oldPassword, newPassword) => async dispatch => {
         oldPassword,
         newPassword,
       },
-      {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        withCredentials: true,
-      }
+      config
     );
 
     dispatch({ type: 'changePasswordSuccess', payload: data.message });
@@ -82,13 +74,6 @@ export const changePassword = (oldPassword, newPassword) => async dispatch => {
 export const forgetPassword = email => async dispatch => {
   try {
     dispatch({ type: 'forgetPasswordRequest' });
-
-    const config = {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      withCredentials: true,
-    };
 
     const { data } = await axios.post(
       `${server}/forgot-password`,
@@ -109,13 +94,6 @@ export const resetPassword = (token, password) => async dispatch => {
   try {
     dispatch({ type: 'resetPasswordRequest' });
 
-    const config = {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      withCredentials: true,
-    };
-
     const { data } = await axios.put(
       `${server}/reset-password/${token}`,
       { password },
@@ -126,6 +104,47 @@ export const resetPassword = (token, password) => async dispatch => {
   } catch (error) {
     dispatch({
       type: 'resetPasswordFail',
+      payload: error.response.data.message,
+    });
+  }
+};
+
+export const addToPlaylist = id => async dispatch => {
+  try {
+    dispatch({ type: 'addToPlaylistRequest' });
+
+    const { data } = await axios.post(
+      `${server}/add-to-playlist`,
+      {
+        id,
+      },
+      config
+    );
+
+    dispatch({ type: 'addToPlaylistSuccess', payload: data.message });
+  } catch (error) {
+    dispatch({
+      type: 'addToPlaylistFail',
+      payload: error.response.data.message,
+    });
+  }
+};
+
+export const removeFromPlaylist = id => async dispatch => {
+  try {
+    dispatch({ type: 'removeFromPlaylistRequest' });
+
+    const { data } = await axios.delete(
+      `${server}/remove-from-playlist?id=${id}`,
+      {
+        withCredentials: true,
+      }
+    );
+
+    dispatch({ type: 'removeFromPlaylistSuccess', payload: data.message });
+  } catch (error) {
+    dispatch({
+      type: 'removeFromPlaylistFail',
       payload: error.response.data.message,
     });
   }
