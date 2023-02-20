@@ -107,7 +107,7 @@ export const addLecture = catchAsyncError(async (req, res, next) => {
 		video,
 	});
 
-	course.numOfvideos = course.lectures.length;
+	course.numOfVideos = course.lectures.length;
 
 	await course.save();
 
@@ -157,7 +157,7 @@ export const deleteLecture = catchAsyncError(async (req, res, next) => {
 
 	await lecture.remove();
 
-	course.numOfvideos = course.lectures.length;
+	course.numOfVideos = course.lectures.length;
 
 	await course.save();
 
