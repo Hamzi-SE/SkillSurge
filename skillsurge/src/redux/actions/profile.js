@@ -37,7 +37,12 @@ export const updateProfilePicture = formData => async dispatch => {
     const { data } = await axios.put(
       `${server}/update-profile-picture`,
       formData,
-      config
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+        withCredentials: true,
+      }
     );
 
     dispatch({ type: 'updateProfilePictureSuccess', payload: data.message });

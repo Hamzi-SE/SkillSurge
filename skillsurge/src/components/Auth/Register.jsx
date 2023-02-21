@@ -45,7 +45,6 @@ const Register = () => {
       setImagePreview(fileReader.result);
       setImage(file);
     };
-    console.log(image);
   };
 
   const submitHandler = e => {
