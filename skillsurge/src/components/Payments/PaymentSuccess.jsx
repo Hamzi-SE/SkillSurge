@@ -9,8 +9,11 @@ import {
 } from '@chakra-ui/react';
 import { RiCheckboxCircleFill } from 'react-icons/ri';
 import { Link } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
 const PaymentSuccess = () => {
+  const { subscription } = useSelector(state => state.payment);
+
   return (
     <Container h="90vh" p={'16'}>
       <Heading my="8" textAlign={'center'}>
@@ -51,7 +54,7 @@ const PaymentSuccess = () => {
           </Button>
         </Link>
 
-        <Heading size={'xs'}>Reference: xyz</Heading>
+        <Heading size={'xs'}>Subscription ID: {subscription}</Heading>
       </VStack>
     </Container>
   );

@@ -3,50 +3,42 @@ import { stripe } from "../server.js";
 import User from "../models/User.js";
 import ErrorHandler from "../utils/ErrorHandler.js";
 
+// get Stripe publishable key
+export const getPublishableKey = catchAsyncError(async (req, res, next) => {
+	res.status(200).json({
+		success: true,
+		stripePublishableKey: process.env.STRIPE_API_KEY,
+	});
+});
+
 export const buySubscription = catchAsyncError(async (req, res, next) => {
-	// const { stripeToken } = req.body;  ------- TODO
-	const { email } = req.user;
-	const { name } = req.user;
-	const { role } = req.user;
+	const { email, name, paymentMethod } = req.body;
 
 	const user = await User.findById(req.user._id);
 
-	// ----- Will receive stripeToken from frontend using Stripe Checkout Form ----- Todo
+	if (user.subscription.id && user.subscription.status === "active") {
+		return next(new ErrorHandler("You already have a subscription", 400));
+	}
 
-	// create customer without source
+	// create customer with source
 	const customer = await stripe.customers.create({
 		email,
 		name,
-		description: role,
-	});
-
-	// create default payment as Card for this user
-	const payment = await stripe.paymentMethods.create({
-		type: "card",
-		card: {
-			number: "4242424242424242",
-			exp_month: 12,
-			exp_year: 2025,
-			cvc: "314",
-		},
-	});
-
-	// attach payment to customer
-	await stripe.paymentMethods.attach(payment.id, {
-		customer: customer.id,
-	});
-
-	// set default payment for customer
-	await stripe.customers.update(customer.id, {
+		payment_method: paymentMethod,
 		invoice_settings: {
-			default_payment_method: payment.id,
+			default_payment_method: paymentMethod,
 		},
+		description: "Skill Surge Pro Pack",
 	});
 
 	// create subscription
 	const subscription = await stripe.subscriptions.create({
 		customer: customer.id,
-		items: [{ price: "price_1MZgOZE8lXiiwU6cudF1JnqY" }],
+		items: [{ price: "price_1MgBDAE8lXiiwU6cKWyKR5L3" }],
+		payment_settings: {
+			payment_method_types: ["card"],
+			save_default_payment_method: "on_subscription",
+		},
 		expand: ["latest_invoice.payment_intent"],
 	});
 
@@ -60,7 +52,9 @@ export const buySubscription = catchAsyncError(async (req, res, next) => {
 
 	res.status(201).json({
 		success: true,
-		subscription,
+		message: "Pro Pack Subscription Successful",
+		clientSecret: subscription.latest_invoice.payment_intent.client_secret,
+		subscriptionId: subscription.id,
 	});
 });
 

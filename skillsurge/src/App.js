@@ -150,8 +150,22 @@ function App() {
                 </ProtectedRoute>
               }
             />
-            <Route path="/payment-success" element={<PaymentSuccess />} />
-            <Route path="/payment-fail" element={<PaymentFail />} />
+            <Route
+              path="/payment-success"
+              element={
+                <ProtectedRoute isAuthenticated={isAuthenticated}>
+                  <PaymentSuccess />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/payment-fail"
+              element={
+                <ProtectedRoute isAuthenticated={isAuthenticated}>
+                  <PaymentFail />
+                </ProtectedRoute>
+              }
+            />
             <Route path="*" element={<NotFound />} />
 
             {/* Admin Routes */}
