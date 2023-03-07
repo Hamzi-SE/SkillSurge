@@ -10,7 +10,6 @@ import {
   ModalBody,
   ModalCloseButton,
   ModalContent,
-  ModalFooter,
   ModalHeader,
   ModalOverlay,
   useDisclosure,
@@ -31,15 +30,17 @@ import { useDispatch, useSelector } from 'react-redux';
 import {
   getStripePublishableKey,
   createSubscription,
-} from '../../redux/actions/payment';
+  checkSubscription,
+} from '../../redux/actions/subscription';
 import { useNavigate } from 'react-router-dom';
+import { loadUser } from '../../redux/actions/user';
 
 const Subscribe = () => {
   const [stripePromise, setStripePromise] = useState('');
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { stripePublishableKey } = useSelector(state => state.payment);
+  const { stripePublishableKey } = useSelector(state => state.subscription);
 
   useEffect(() => {
     // get stripe publishable keys
@@ -120,10 +121,11 @@ function PaymentForm({
     user: { name: userName, email: userEmail },
   } = useSelector(state => state.user);
 
-  const { error, message, loading } = useSelector(state => state.payment);
+  const { error, message } = useSelector(state => state.subscription);
 
   const [name, setName] = useState(userName);
   const [email, setEmail] = useState(userEmail);
+  const [loading, setLoading] = useState(false);
 
   const stripe = useStripe();
   const elements = useElements();
@@ -133,6 +135,11 @@ function PaymentForm({
 
   const createSubscriptionHandler = async e => {
     e.preventDefault();
+    setLoading(true);
+
+    if (!stripe || !elements || loading) {
+      return;
+    }
 
     try {
       const paymentMethod = await stripe.createPaymentMethod({
@@ -141,7 +148,9 @@ function PaymentForm({
       });
 
       if (paymentMethod.error) {
-        console.log(paymentMethod.error);
+        toast.error(paymentMethod.error.message);
+        setLoading(false);
+        return;
       }
 
       await dispatch(
@@ -152,6 +161,16 @@ function PaymentForm({
           stripe,
         })
       );
+
+      elements.getElement(CardElement).clear();
+
+      onClose();
+
+      await dispatch(checkSubscription());
+
+      await dispatch(loadUser());
+
+      setLoading(false);
     } catch (error) {
       console.log(error);
     }
@@ -161,7 +180,8 @@ function PaymentForm({
     style: {
       base: {
         fontSize: '16px',
-        color: '#32325d',
+        fontSmoothing: 'antialiased',
+        color: isDark ? '#fff' : '#32325d',
         iconColor: isDark ? '#fff' : '#32325d',
         fontFamily: '"Helvetica Neue", Helvetica, sans-serif',
         '::placeholder': {
@@ -172,6 +192,10 @@ function PaymentForm({
         color: '#fa755a',
         iconColor: '#fa755a',
       },
+      complete: {
+        color: '#48bb78',
+        iconColor: '#48bb78',
+      },
     },
   };
 
@@ -179,6 +203,7 @@ function PaymentForm({
     if (error) {
       toast.error(error);
       dispatch({ type: 'clearError' });
+      navigate('/payment-fail');
     }
     if (message) {
       toast.success(message);
@@ -194,22 +219,20 @@ function PaymentForm({
         <ModalContent>
           <ModalHeader>Pro Plan Purchase</ModalHeader>
           <ModalCloseButton />
-          <ModalBody>
+          <ModalBody padding={'8'}>
             <Container>
               <form
                 style={{ minWidth: '100%' }}
                 onSubmit={createSubscriptionHandler}
               >
-                <VStack spacing={'8'}>
-                  <HStack>
-                    <RiSecurePaymentFill />
-                    <Heading
-                      size={'xs'}
-                      fontFamily="sans-serif"
-                      textTransform={'uppercase'}
-                      children={'Payment is secured by Stripe'}
-                    />
-                  </HStack>
+                <VStack spacing={'3'}>
+                  <Heading
+                    size={'xs'}
+                    fontFamily="sans-serif"
+                    textTransform={'uppercase'}
+                    children={'Billing Details'}
+                  />
+
                   <VStack w={'full'}>
                     <Input
                       required
@@ -246,7 +269,18 @@ function PaymentForm({
                       *Card details are not stored on our servers
                     </Text>
 
-                    <HStack w="full"></HStack>
+                    <HStack>
+                      <Heading
+                        size={'xs'}
+                        fontFamily="sans-serif"
+                        textTransform={'uppercase'}
+                        children={'100% Refund At Cancellation'}
+                      />
+                    </HStack>
+
+                    <Text fontSize={'xs'} color="gray.500">
+                      *Terms & Conditions Apply
+                    </Text>
                   </VStack>
 
                   <Button
@@ -257,16 +291,20 @@ function PaymentForm({
                   >
                     Pay now - Rs. 500
                   </Button>
+
+                  <HStack>
+                    <RiSecurePaymentFill />
+                    <Heading
+                      size={'xs'}
+                      fontFamily="sans-serif"
+                      textTransform={'uppercase'}
+                      children={'Payment is secured by Stripe'}
+                    />
+                  </HStack>
                 </VStack>
               </form>
             </Container>
           </ModalBody>
-
-          <ModalFooter>
-            <Button mr={'3'} onClick={() => onClose()}>
-              Cancel
-            </Button>
-          </ModalFooter>
         </ModalContent>
       </Modal>
     </>

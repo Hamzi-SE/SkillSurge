@@ -42,6 +42,11 @@ export const buySubscription = catchAsyncError(async (req, res, next) => {
 		expand: ["latest_invoice.payment_intent"],
 	});
 
+	if (!customer || !subscription) {
+		return res.redirect(`${process.env.FRONTEND_URL}/payment-fail`);
+	}
+
+	// update user subscription details
 	user.subscription.createdAt = Date.now();
 	user.subscription.id = subscription.id;
 	user.subscription.status = subscription.status;
@@ -58,32 +63,37 @@ export const buySubscription = catchAsyncError(async (req, res, next) => {
 	});
 });
 
-// cancel subscription
-export const cancelSubscription = catchAsyncError(async (req, res, next) => {
+// check and update subscription status
+export const checkAndUpdateSubscriptionState = catchAsyncError(async (req, res, next) => {
 	const user = await User.findById(req.user._id);
 
 	if (!user.subscription.id) {
 		return next(new ErrorHandler("You do not have any subscription", 400));
 	}
 
-	const subscription = await stripe.subscriptions.del(user.subscription.id);
+	const subscription = await stripe.subscriptions.retrieve(user.subscription.id);
 
-	user.subscription.id = undefined;
-	user.subscription.status = "inactive";
-	user.subscription.plan = undefined;
-	user.subscription.createdAt = undefined;
-	user.subscription.payment_intent = undefined;
+	// check if the 3ds failed
+	if (subscription.status !== "active") {
+		user.subscription.status = subscription.status;
+
+		await user.save();
+
+		return next(new ErrorHandler("Payment failed, please try again", 400));
+	}
+
+	user.subscription.status = subscription.status;
 
 	await user.save();
 
 	res.status(200).json({
 		success: true,
-		subscription,
+		message: "Subscription Status Updated successfully",
 	});
 });
 
-// refund if he purchased subscription in the last 7 days only
-export const refundSubscription = catchAsyncError(async (req, res, next) => {
+// cancel subscription
+export const cancelSubscription = catchAsyncError(async (req, res, next) => {
 	const user = await User.findById(req.user._id);
 
 	if (!user.subscription.id) {
@@ -109,13 +119,14 @@ export const refundSubscription = catchAsyncError(async (req, res, next) => {
 	user.subscription.status = "inactive";
 	user.subscription.plan = undefined;
 	user.subscription.createdAt = undefined;
+	user.subscription.payment_intent = undefined;
 
 	await user.save();
 
 	res.status(200).json({
 		success: true,
 		message: refund
-			? "Subscription cancelled, you will receive full refund within 7 days. Thank you"
-			: `Subscription cancelled, you will not receive refund as refund can only be initiated within ${process.env.REFUND_DAYS} days of purchase. Thank you`,
+			? "Subscription cancelled, you will receive full refund within 5 - 10 days. Thank you!"
+			: `Subscription cancelled, you will not receive refund as refund can only be initiated within ${process.env.REFUND_DAYS} days of purchase. Thank you!`,
 	});
 });

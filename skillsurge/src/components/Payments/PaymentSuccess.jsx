@@ -12,7 +12,7 @@ import { Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 
 const PaymentSuccess = () => {
-  const { subscription } = useSelector(state => state.payment);
+  const { subscription } = useSelector(state => state.subscription);
 
   return (
     <Container h="90vh" p={'16'}>

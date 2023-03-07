@@ -1,6 +1,6 @@
 import { createReducer } from '@reduxjs/toolkit';
 
-export const paymentReducer = createReducer(
+export const subscriptionReducer = createReducer(
   {},
   {
     stripePublishableKeyRequest: state => {
@@ -23,6 +23,28 @@ export const paymentReducer = createReducer(
       state.message = action.payload.message;
     },
     createSubscriptionFail: (state, action) => {
+      state.loading = false;
+      state.error = action.payload;
+    },
+    cancelSubscriptionRequest: state => {
+      state.loading = true;
+    },
+    cancelSubscriptionSuccess: (state, action) => {
+      state.loading = false;
+      state.message = action.payload;
+    },
+    cancelSubscriptionFail: (state, action) => {
+      state.loading = false;
+      state.error = action.payload;
+    },
+    checkSubscriptionRequest: state => {
+      state.loading = true;
+    },
+    checkSubscriptionSuccess: (state, action) => {
+      state.loading = false;
+      state.message = action.payload;
+    },
+    checkSubscriptionFail: (state, action) => {
       state.loading = false;
       state.error = action.payload;
     },

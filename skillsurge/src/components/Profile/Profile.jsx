@@ -29,10 +29,16 @@ import {
 } from '../../redux/actions/profile';
 import { loadUser } from '../../redux/actions/user';
 import { toast } from 'react-hot-toast';
+import { cancelSubscription } from '../../redux/actions/subscription';
 
 const Profile = ({ user }) => {
   const dispatch = useDispatch();
   const { loading, message, error } = useSelector(state => state.profile);
+  const {
+    loading: subscriptionLoading,
+    message: subscriptionMessage,
+    error: subscriptionError,
+  } = useSelector(state => state.subscription);
 
   const removeFromPlaylistHandler = async courseId => {
     await dispatch(removeFromPlaylist(courseId));
@@ -49,6 +55,12 @@ const Profile = ({ user }) => {
     dispatch(loadUser());
   };
 
+  const cancelSubscriptionHandler = async () => {
+    await dispatch(cancelSubscription());
+  };
+
+  const { isOpen, onClose, onOpen } = useDisclosure();
+
   useEffect(() => {
     if (error) {
       toast.error(error);
@@ -58,9 +70,17 @@ const Profile = ({ user }) => {
       toast.success(message);
       dispatch({ type: 'clearMessage' });
     }
-  }, [dispatch, error, message]);
+    if (subscriptionError) {
+      toast.error(subscriptionError);
+      dispatch({ type: 'clearError' });
+    }
+    if (subscriptionMessage) {
+      toast.success(subscriptionMessage);
+      dispatch({ type: 'clearMessage' });
 
-  const { isOpen, onClose, onOpen } = useDisclosure();
+      dispatch(loadUser());
+    }
+  }, [dispatch, error, message, subscriptionError, subscriptionMessage]);
 
   return (
     <Container minH={'95vh'} maxW="container.lg" py={'8'}>
@@ -99,7 +119,12 @@ const Profile = ({ user }) => {
             <HStack>
               <Text children="Subscription" fontWeight={'bold'} />
               {user?.subscription?.status === 'active' ? (
-                <Button color={'yellow.500'} variant={'unstyled'}>
+                <Button
+                  isLoading={subscriptionLoading}
+                  onClick={cancelSubscriptionHandler}
+                  color={'yellow.500'}
+                  variant={'unstyled'}
+                >
                   Cancel Subscription
                 </Button>
               ) : (
