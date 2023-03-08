@@ -59,6 +59,11 @@ const Profile = ({ user }) => {
     await dispatch(cancelSubscription());
   };
 
+  const {
+    isOpen: cancelSubscriptionIsOpen,
+    onClose: cancelSubscriptionOnClose,
+    onOpen: cancelSubscriptionOnOpen,
+  } = useDisclosure();
   const { isOpen, onClose, onOpen } = useDisclosure();
 
   useEffect(() => {
@@ -121,7 +126,8 @@ const Profile = ({ user }) => {
               {user?.subscription?.status === 'active' ? (
                 <Button
                   isLoading={subscriptionLoading}
-                  onClick={cancelSubscriptionHandler}
+                  // onClick={cancelSubscriptionHandler}
+                  onClick={cancelSubscriptionOnOpen}
                   color={'yellow.500'}
                   variant={'unstyled'}
                 >
@@ -182,6 +188,13 @@ const Profile = ({ user }) => {
         isOpen={isOpen}
         onClose={onClose}
         loading={loading}
+      />
+
+      <CancelSubscriptionBox
+        cancelSubscriptionHandler={cancelSubscriptionHandler}
+        isOpen={cancelSubscriptionIsOpen}
+        onClose={cancelSubscriptionOnClose}
+        loading={subscriptionLoading}
       />
     </Container>
   );
@@ -250,6 +263,48 @@ function ChangePhotoBox({
             Cancel
           </Button>
         </ModalFooter>
+      </ModalContent>
+    </Modal>
+  );
+}
+
+function CancelSubscriptionBox({
+  isOpen,
+  onClose,
+  cancelSubscriptionHandler,
+  loading,
+}) {
+  return (
+    <Modal isOpen={isOpen} onClose={() => onClose()}>
+      <ModalOverlay backdropFilter={'blur(10px)'} />
+      <ModalContent>
+        <ModalHeader>Cancel Subscription</ModalHeader>
+        <ModalCloseButton />
+        <ModalBody p={'5'}>
+          <Container>
+            <VStack>
+              <VStack>
+                <Heading fontSize={'md'} color={'red.500'}>
+                  Are you sure you want to cancel your subscription? You will
+                  lose access to all the courses you have subscribed to. <br />{' '}
+                  This action is irreversible*
+                </Heading>
+              </VStack>
+              <HStack w={'full'} justifyContent={'flex-end'}>
+                <Button
+                  isLoading={loading}
+                  colorScheme={'red'}
+                  onClick={cancelSubscriptionHandler}
+                >
+                  Yes
+                </Button>
+                <Button isDisabled={loading} onClick={() => onClose()}>
+                  No
+                </Button>
+              </HStack>
+            </VStack>
+          </Container>
+        </ModalBody>
       </ModalContent>
     </Modal>
   );

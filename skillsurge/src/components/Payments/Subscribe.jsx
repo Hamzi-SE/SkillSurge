@@ -41,8 +41,17 @@ const Subscribe = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { stripePublishableKey } = useSelector(state => state.subscription);
+  const { error: courseError } = useSelector(state => state.courses);
+
+  const { colorMode } = useColorMode();
+  const isDark = colorMode === 'dark';
 
   useEffect(() => {
+    if (courseError) {
+      toast.error(courseError);
+      dispatch({ type: 'clearError' });
+    }
+
     // get stripe publishable keys
     dispatch(getStripePublishableKey());
 
@@ -50,7 +59,7 @@ const Subscribe = () => {
     if (stripePublishableKey) {
       setStripePromise(loadStripe(stripePublishableKey));
     }
-  }, [dispatch, stripePublishableKey]);
+  }, [dispatch, stripePublishableKey, courseError]);
 
   const { isOpen, onClose, onOpen } = useDisclosure();
 
@@ -58,7 +67,7 @@ const Subscribe = () => {
     <Container h={'90vh'} p="16">
       <Heading children="Welcome" my="8" textAlign={'center'} />
       <VStack
-        boxShadow={'lg'}
+        boxShadow={isDark ? 'dark-lg' : 'lg'}
         alignItems="stretch"
         borderRadius={'lg'}
         spacing="0"
@@ -101,6 +110,7 @@ const Subscribe = () => {
             dispatch={dispatch}
             createSubscription={createSubscription}
             navigate={navigate}
+            isDark={isDark}
           />
         </Elements>
       )}
@@ -116,6 +126,7 @@ function PaymentForm({
   dispatch,
   createSubscription,
   navigate,
+  isDark,
 }) {
   const {
     user: { name: userName, email: userEmail },
@@ -129,9 +140,6 @@ function PaymentForm({
 
   const stripe = useStripe();
   const elements = useElements();
-
-  const { colorMode } = useColorMode();
-  const isDark = colorMode === 'dark';
 
   const createSubscriptionHandler = async e => {
     e.preventDefault();

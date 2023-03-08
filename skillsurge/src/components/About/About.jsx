@@ -7,6 +7,7 @@ import {
   HStack,
   Stack,
   Text,
+  useColorMode,
   VStack,
 } from '@chakra-ui/react';
 import React from 'react';
@@ -92,8 +93,16 @@ const TandC = ({ termsAndConditions }) => (
 );
 
 const About = () => {
+  const { colorMode } = useColorMode();
+  const isDark = colorMode === 'dark';
+
   return (
-    <Container maxW={'container.lg'} padding={'16'} boxShadow={'lg'}>
+    <Container
+      maxW={'container.lg'}
+      padding={'16'}
+      marginY={'1'}
+      boxShadow={isDark ? 'dark-lg' : 'lg'}
+    >
       <Heading children="About Us" textAlign={['center', 'left']} />
       <Founder />
       <Stack m="8" direction={['column', 'row']} alignItems="center">

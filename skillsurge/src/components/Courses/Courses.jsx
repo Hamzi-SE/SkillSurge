@@ -110,6 +110,8 @@ const Courses = () => {
               loading={loading}
             />
           ))
+        ) : loading ? (
+          <Heading children="Loading..." mt={4} />
         ) : (
           <Heading children="Courses Not Found" mt={4} />
         )}
