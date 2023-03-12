@@ -79,6 +79,11 @@ const Courses = () => {
             backgroundColor: '#ECC94B',
             borderRadius: '0.5rem',
           },
+
+          '&::-webkit-scrollbar-track': {
+            backgroundColor: '#CBD5E0',
+            borderRadius: '0.5rem',
+          },
         }}
       >
         {categories.map((category, index) => (

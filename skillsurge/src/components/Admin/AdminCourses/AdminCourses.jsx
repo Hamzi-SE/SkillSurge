@@ -15,45 +15,90 @@ import {
   Tr,
   useDisclosure,
 } from '@chakra-ui/react';
-import React from 'react';
-import Sidebar from '../Sidebar';
+import React, { useEffect, useState } from 'react';
+import Sidebar, { adminTableScrollbarStyle } from '../Sidebar';
 import cursor from '../../../assets/images/cursor.png';
+import toast from 'react-hot-toast';
 import { RiDeleteBin7Fill } from 'react-icons/ri';
 import CourseModal from './CourseModal';
+import { useDispatch, useSelector } from 'react-redux';
+import {
+  getAllCourses,
+  getCourseLectures,
+} from '../../../redux/actions/course';
+import {
+  addLecture,
+  deleteCourse,
+  deleteLecture,
+} from '../../../redux/actions/admin';
 
 const AdminCourses = () => {
-  const courses = [
-    {
-      _id: '123asdzxc123asd',
-      poster: {
-        url: 'https://cdn.pixabay.com/photo/2020/01/26/20/14/computer-4795762_960_720.jpg',
-      },
-      title: 'React Course',
-      category: 'Web Development',
-      createdBy: 'Hamza',
-      views: 123,
-      numOfVideos: 12,
-    },
-  ];
+  const [courseId, setCourseId] = useState('');
+  const [courseTitle, setCourseTitle] = useState('');
+
+  // Lecture details - declaring here because we have to reset after successful creation
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+  const [video, setVideo] = useState('');
+  const [videoPreview, setVideoPreview] = useState('');
+
+  const { courses, lectures } = useSelector(state => state.courses);
+  const { loading, error, message } = useSelector(state => state.admin);
+  const dispatch = useDispatch();
 
   const { isOpen, onClose, onOpen } = useDisclosure();
 
-  const courseDetailsHandler = courseId => {
+  const resetForm = () => {
+    setTitle('');
+    setDescription('');
+    setVideo('');
+    setVideoPreview('');
+  };
+
+  const courseDetailsHandler = (courseId, courseTitle) => {
+    setCourseId(courseId);
+    setCourseTitle(courseTitle);
+    dispatch(getCourseLectures(courseId));
     onOpen();
   };
 
   const deleteButtonHandler = courseId => {
-    console.log(courseId);
+    dispatch(deleteCourse(courseId));
   };
 
-  const deleteLectureButtonHandler = (courseId, lectureId) => {
-    console.log(courseId, lectureId);
+  const deleteLectureButtonHandler = async (courseId, lectureId) => {
+    await dispatch(deleteLecture(courseId, lectureId));
+
+    dispatch(getCourseLectures(courseId));
   };
 
-  const addLectureHandler = (e, courseId, title, description, video) => {
+  const addLectureHandler = async (e, courseId, title, description, video) => {
     e.preventDefault();
-    console.log(courseId);
+
+    const formData = new FormData();
+    formData.append('title', title);
+    formData.append('description', description);
+    formData.append('file', video);
+
+    await dispatch(addLecture(courseId, formData));
+
+    dispatch(getCourseLectures(courseId));
   };
+
+  useEffect(() => {
+    dispatch(getAllCourses());
+
+    if (error) {
+      toast.error(error);
+      dispatch({ type: 'clearError' });
+    }
+
+    if (message) {
+      toast.success(message);
+      dispatch({ type: 'clearMessage' });
+      resetForm();
+    }
+  }, [dispatch, message, error]);
 
   return (
     <Grid
@@ -71,7 +116,7 @@ const AdminCourses = () => {
           textAlign={['center', 'left']}
         />
 
-        <TableContainer w={['100vw', 'full']}>
+        <TableContainer w={['100vw', 'full']} css={adminTableScrollbarStyle}>
           <Table variant="simple" size={'lg'}>
             <TableCaption>All available courses in the database</TableCaption>
 
@@ -94,6 +139,7 @@ const AdminCourses = () => {
                   item={item}
                   courseDetailsHandler={courseDetailsHandler}
                   deleteButtonHandler={deleteButtonHandler}
+                  loading={loading}
                 />
               ))}
             </Tbody>
@@ -103,10 +149,20 @@ const AdminCourses = () => {
         <CourseModal
           isOpen={isOpen}
           onClose={onClose}
-          id={'asddsadsazxczxqw'}
-          courseTitle={'React Course'}
+          id={courseId}
+          courseTitle={courseTitle}
+          title={title}
+          setTitle={setTitle}
+          description={description}
+          setDescription={setDescription}
+          video={video}
+          setVideo={setVideo}
+          videoPreview={videoPreview}
+          setVideoPreview={setVideoPreview}
           deleteButtonHandler={deleteLectureButtonHandler}
           addLectureHandler={addLectureHandler}
+          lectures={lectures}
+          loading={loading}
         />
       </Box>
       <Sidebar />
@@ -114,7 +170,7 @@ const AdminCourses = () => {
   );
 };
 
-function Row({ item, courseDetailsHandler, deleteButtonHandler }) {
+function Row({ item, courseDetailsHandler, deleteButtonHandler, loading }) {
   return (
     <Tr>
       <Td>#{item._id}</Td>
@@ -132,13 +188,15 @@ function Row({ item, courseDetailsHandler, deleteButtonHandler }) {
       <Td isNumeric>
         <HStack justifyContent={'flex-end'}>
           <Button
+            isLoading={loading}
             variant={'outline'}
             color="purple.500"
-            onClick={() => courseDetailsHandler(item._id)}
+            onClick={() => courseDetailsHandler(item._id, item.title)}
           >
             View Lectures
           </Button>
           <Button
+            isLoading={loading}
             onClick={() => deleteButtonHandler(item._id)}
             color={'purple.600'}
           >

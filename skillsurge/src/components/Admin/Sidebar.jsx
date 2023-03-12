@@ -60,3 +60,19 @@ function LinkButton({ url, Icon, text, active }) {
     </Link>
   );
 }
+
+export const adminTableScrollbarStyle = {
+  '&::-webkit-scrollbar': {
+    height: '12px',
+  },
+
+  '&::-webkit-scrollbar-thumb': {
+    backgroundColor: '#6B46C1',
+    borderRadius: '0.5rem',
+  },
+
+  '&::-webkit-scrollbar-track': {
+    backgroundColor: '#CBD5E0',
+    borderRadius: '0.5rem',
+  },
+};

@@ -8,6 +8,7 @@ import { sendEmail } from "../utils/sendEmail.js";
 import crypto from "crypto";
 import cloudinary from "cloudinary";
 import getDataUri from "../utils/dataUri.js";
+import { stripe } from "../server.js";
 
 export const register = catchAsyncError(async (req, res, next) => {
 	const { name, email, password } = req.body;
@@ -88,6 +89,9 @@ export const deleteMyProfile = catchAsyncError(async (req, res, next) => {
 	}
 
 	// Cancel subscription
+	if (user.subscription && user.subscription.status === "active") {
+		await stripe.subscriptions.del(user.subscription.id);
+	}
 
 	await user.remove();
 
@@ -327,7 +331,10 @@ export const deleteUser = catchAsyncError(async (req, res, next) => {
 		await cloudinary.v2.uploader.destroy(user.avatar.public_id);
 	}
 
-	// Cancel Subscription
+	// Cancel User's Subscription
+	if (user.subscription && user.subscription.status === "active") {
+		await stripe.subscriptions.del(user.subscription.id);
+	}
 
 	await user.remove();
 
@@ -346,7 +353,7 @@ User.watch().on("change", async () => {
 
 	stats[0].subscriptions = totalSubscribers;
 	stats[0].users = totalUsers;
-	stats[0].createdAt = new Date(Date.now());
+	stats[0].updatedAt = new Date(Date.now());
 
 	await stats[0].save();
 });

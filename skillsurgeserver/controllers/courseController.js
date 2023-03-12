@@ -62,7 +62,10 @@ export const getCourseLectures = catchAsyncError(async (req, res, next) => {
 
 	if (!course) return next(new ErrorHandler("Course not found", 404));
 
-	course.views += 1;
+	// Update views (but not if admin opens it)
+	if (req.user.role !== "admin") {
+		course.views += 1;
+	}
 
 	await course.save();
 
@@ -76,20 +79,26 @@ export const getCourseLectures = catchAsyncError(async (req, res, next) => {
 export const addLecture = catchAsyncError(async (req, res, next) => {
 	const { id } = req.params;
 	const { title, description } = req.body;
+	const file = req.file;
+
+	if (!title || !description || !file) return next(new ErrorHandler("Please fill all fields", 400));
+
+	if (title.length < 4) {
+		return next(new ErrorHandler("Lecture title must be at least 4 characters", 400));
+	}
+	if (description.length < 20) {
+		return next(new ErrorHandler("Lecture description must be at least 20 characters", 400));
+	}
 
 	const course = await Course.findById(id);
 
 	if (!course) return next(new ErrorHandler("Course not found", 404));
 
-	const file = req.file;
-
-	if (!title || !description || !file) return next(new ErrorHandler("Please fill all fields", 400));
-
 	const fileUri = getDataUri(file);
 
 	const fileSize = file.size / 1000000; // get the file size in MB
 
-	if (fileSize > 100) return next(new ErrorHandler("Video size should be less than 100mb", 400));
+	if (fileSize > 100) return next(new ErrorHandler("Video size should be less than 100 MB", 400));
 
 	const result = await cloudinary.v2.uploader.upload(fileUri.content, {
 		resource_type: "video",

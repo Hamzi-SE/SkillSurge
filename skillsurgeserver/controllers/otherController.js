@@ -74,6 +74,7 @@ export const getDashboardStats = catchAsyncError(async (req, res, next) => {
 				users: stats[i - 1].users,
 				subscriptions: stats[i - 1].subscriptions,
 				views: stats[i - 1].views,
+				updatedAt: stats[i - 1].updatedAt,
 			});
 		}
 	}
@@ -84,6 +85,7 @@ export const getDashboardStats = catchAsyncError(async (req, res, next) => {
 				users: stat.users,
 				subscriptions: stat.subscriptions,
 				views: stat.views,
+				updatedAt: stat.updatedAt,
 			});
 		});
 	}

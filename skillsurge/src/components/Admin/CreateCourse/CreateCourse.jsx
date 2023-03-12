@@ -8,11 +8,15 @@ import {
   Select,
   VStack,
 } from '@chakra-ui/react';
-import React from 'react';
+import React, { useEffect } from 'react';
 import Sidebar from '../Sidebar';
 import cursor from '../../../assets/images/cursor.png';
+import toast from 'react-hot-toast';
 import { useState } from 'react';
 import { fileUploadCSS } from '../../Auth/Register';
+import { useDispatch, useSelector } from 'react-redux';
+import { createCourse } from '../../../redux/actions/admin';
+import { useNavigate } from 'react-router-dom';
 
 const CreateCourse = () => {
   const [title, setTitle] = useState('');
@@ -22,6 +26,10 @@ const CreateCourse = () => {
   const [image, setImage] = useState('');
   const [imagePreview, setImagePreview] = useState('');
 
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { loading, error, message } = useSelector(state => state.admin);
+
   const changeImageHandler = e => {
     const file = e.target.files[0];
     const fileReader = new FileReader();
@@ -30,7 +38,6 @@ const CreateCourse = () => {
       setImagePreview(fileReader.result);
       setImage(file);
     };
-    console.log(image);
   };
 
   const categories = [
@@ -45,6 +52,31 @@ const CreateCourse = () => {
     'Game Development',
   ];
 
+  const createCourseHandler = e => {
+    e.preventDefault();
+
+    const formData = new FormData();
+    formData.append('title', title);
+    formData.append('description', description);
+    formData.append('category', category);
+    formData.append('createdBy', createdBy);
+    formData.append('file', image);
+
+    dispatch(createCourse(formData));
+  };
+
+  useEffect(() => {
+    if (error) {
+      toast.error(error);
+      dispatch({ type: 'clearError' });
+    }
+    if (message) {
+      toast.success(message);
+      dispatch({ type: 'clearMessage' });
+      navigate('/admin/courses');
+    }
+  }, [dispatch, error, message, navigate]);
+
   return (
     <Grid
       css={{
@@ -54,7 +86,7 @@ const CreateCourse = () => {
       templateColumns={['1fr', '5fr 1fr']}
     >
       <Container py="16">
-        <form>
+        <form onSubmit={createCourseHandler}>
           <Heading
             textTransform={'uppercase'}
             children="Create Course"
@@ -117,8 +149,13 @@ const CreateCourse = () => {
               <Image src={imagePreview} boxSize="64" objectFit={'contain'} />
             )}
 
-            <Button w={'full'} colorScheme={'purple'} type={'submit'}>
-              Create
+            <Button
+              isLoading={loading}
+              w={'full'}
+              colorScheme={'purple'}
+              type={'submit'}
+            >
+              Create Course
             </Button>
           </VStack>
         </form>

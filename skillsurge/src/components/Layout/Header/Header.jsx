@@ -12,7 +12,7 @@ import {
 import React from 'react';
 import { ColorModeSwitcher } from '../../../ColorModeSwitcher';
 import { RiDashboardFill, RiLogoutBoxLine, RiMenu5Fill } from 'react-icons/ri';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { logout } from '../../../redux/actions/user';
 
@@ -27,6 +27,7 @@ const LinkButton = ({ url = '/', title = 'Home', onClose }) => {
 const Header = ({ isAuthenticated = false, user }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const dispatch = useDispatch();
+  const location = useLocation();
 
   const logoutHandler = () => {
     onClose();
@@ -40,7 +41,7 @@ const Header = ({ isAuthenticated = false, user }) => {
       <Button
         zIndex={'overlay'}
         onClick={onOpen}
-        colorScheme={'yellow'}
+        colorScheme={location.pathname.includes('admin') ? 'purple' : 'yellow'}
         width="12"
         height="12"
         rounded={'full'}

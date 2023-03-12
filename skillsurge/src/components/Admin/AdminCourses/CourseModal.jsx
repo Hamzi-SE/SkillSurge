@@ -16,7 +16,6 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import React from 'react';
-import { useState } from 'react';
 import { RiDeleteBin7Fill } from 'react-icons/ri';
 import { fileUploadCSS } from '../../Auth/Register';
 
@@ -24,16 +23,20 @@ const CourseModal = ({
   isOpen,
   onClose,
   id,
+  title,
+  setTitle,
+  description,
+  setDescription,
+  video,
+  setVideo,
+  videoPreview,
+  setVideoPreview,
   deleteButtonHandler,
   addLectureHandler,
   courseTitle,
-  lectures = [1, 2, 3, 4, 5, 6, 7, 8],
+  lectures = [],
+  loading,
 }) => {
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [video, setVideo] = useState('');
-  const [videoPreview, setVideoPreview] = useState('');
-
   const changeVideoHandler = e => {
     const file = e.target.files[0];
     const fileReader = new FileReader();
@@ -42,7 +45,6 @@ const CourseModal = ({
       setVideoPreview(fileReader.result);
       setVideo(file);
     };
-    console.log(video);
   };
 
   const modalCloseHandler = () => {
@@ -77,12 +79,13 @@ const CourseModal = ({
               {lectures.map((lecture, index) => (
                 <VideoCard
                   key={index}
-                  title="React Intro"
-                  description="This is a intro lecture where you will know the basics of React"
+                  title={lecture.title}
+                  description={lecture.description}
                   num={index + 1}
-                  lectureId="adssda12lecturead321"
+                  lectureId={lecture._id}
                   courseId={id}
                   deleteButtonHandler={deleteButtonHandler}
+                  loading={loading}
                 />
               ))}
             </Box>
@@ -136,7 +139,12 @@ const CourseModal = ({
                     ></video>
                   )}
 
-                  <Button w={'full'} colorScheme={'purple'} type="submit">
+                  <Button
+                    isLoading={loading}
+                    w={'full'}
+                    colorScheme={'purple'}
+                    type="submit"
+                  >
                     Upload
                   </Button>
                 </VStack>
@@ -162,6 +170,7 @@ function VideoCard({
   lectureId,
   courseId,
   deleteButtonHandler,
+  loading,
 }) {
   return (
     <Stack
@@ -177,6 +186,7 @@ function VideoCard({
         <Text children={description} />
       </Box>
       <Button
+        isLoading={loading}
         color={'purple.600'}
         onClick={() => deleteButtonHandler(courseId, lectureId)}
       >

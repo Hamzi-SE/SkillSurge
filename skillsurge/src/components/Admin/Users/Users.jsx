@@ -13,40 +13,43 @@ import {
   Thead,
   Tr,
 } from '@chakra-ui/react';
-import React from 'react';
-import Sidebar from '../Sidebar';
+import React, { useEffect } from 'react';
+import Sidebar, { adminTableScrollbarStyle } from '../Sidebar';
 import cursor from '../../../assets/images/cursor.png';
 import { RiDeleteBin7Fill } from 'react-icons/ri';
+import { useDispatch, useSelector } from 'react-redux';
+import {
+  deleteUser,
+  getAllUsers,
+  updateUserRole,
+} from '../../../redux/actions/admin';
+import toast from 'react-hot-toast';
 
 const Users = () => {
-  const users = [
-    {
-      _id: '1213sdasdazxc231',
-      name: 'Hamza',
-      email: 'hamzii.se@gmail.com',
-      role: 'admin',
-      subscription: {
-        status: 'active',
-      },
-    },
-    {
-      _id: 'dasasd12331sdazc',
-      name: 'John Doe',
-      email: 'john@gmail.com',
-      role: 'user',
-      subscription: {
-        status: 'notActive',
-      },
-    },
-  ];
+  const { users, loading, error, message } = useSelector(state => state.admin);
+  const dispatch = useDispatch();
 
-  const updateHandler = userId => {
-    console.log(userId);
+  const updateUserRoleHandler = userId => {
+    dispatch(updateUserRole(userId));
   };
 
-  const deleteButtonHandler = userId => {
-    console.log(userId);
+  const deleteUserHandler = userId => {
+    dispatch(deleteUser(userId));
   };
+
+  useEffect(() => {
+    if (error) {
+      toast.error(error);
+      dispatch({ type: 'clearError' });
+    }
+
+    if (message) {
+      toast.success(message);
+      dispatch({ type: 'clearMessage' });
+    }
+
+    dispatch(getAllUsers());
+  }, [dispatch, message, error]);
 
   return (
     <Grid
@@ -64,7 +67,7 @@ const Users = () => {
           textAlign={['center', 'left']}
         />
 
-        <TableContainer w={['100vw', 'full']}>
+        <TableContainer w={['100vw', 'full']} css={adminTableScrollbarStyle}>
           <Table variant="simple" size={'lg'}>
             <TableCaption>All available users in the database</TableCaption>
 
@@ -79,18 +82,21 @@ const Users = () => {
               </Tr>
             </Thead>
             <Tbody>
-              {users.map(item => (
-                <Row
-                  key={item._id}
-                  item={item}
-                  updateHandler={updateHandler}
-                  deleteButtonHandler={deleteButtonHandler}
-                />
-              ))}
+              {users &&
+                users.map(item => (
+                  <Row
+                    key={item._id}
+                    item={item}
+                    updateUserRoleHandler={updateUserRoleHandler}
+                    deleteUserHandler={deleteUserHandler}
+                    loading={loading}
+                  />
+                ))}
             </Tbody>
           </Table>
         </TableContainer>
       </Box>
+
       <Sidebar />
     </Grid>
   );
@@ -98,26 +104,33 @@ const Users = () => {
 
 export default Users;
 
-function Row({ item, updateHandler, deleteButtonHandler }) {
+function Row({ item, updateUserRoleHandler, deleteUserHandler, loading }) {
   return (
     <Tr>
       <Td>#{item._id}</Td>
       <Td>{item.name}</Td>
       <Td>{item.email}</Td>
       <Td>{item.role}</Td>
-      <Td>{item.subscription.status === 'active' ? 'Active' : 'Not Active'}</Td>
+      <Td>
+        {item.subscription && item.subscription.status === 'active'
+          ? 'Active'
+          : 'Not Active'}
+      </Td>
       <Td isNumeric>
         <HStack justifyContent={'flex-end'}>
           <Button
             variant={'outline'}
             color="purple.500"
-            onClick={() => updateHandler(item._id)}
+            onClick={() => updateUserRoleHandler(item._id)}
+            isLoading={loading}
           >
             Change Role
           </Button>
           <Button
-            onClick={() => deleteButtonHandler(item._id)}
+            onClick={() => deleteUserHandler(item._id)}
             color={'purple.600'}
+            variant={'outline'}
+            isLoading={loading}
           >
             <RiDeleteBin7Fill />{' '}
           </Button>
