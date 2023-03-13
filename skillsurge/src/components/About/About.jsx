@@ -23,16 +23,14 @@ const Founder = () => (
         src="https://avatars.githubusercontent.com/u/99138406?v=4"
         boxSize={['40', '48']}
       />
-      <Text children={'Co-Founder'} opacity={'0.7'} />
+      <Text children={'Founder'} opacity={'0.7'} />
     </VStack>
 
     <VStack justifyContent={'center'} alignItems={['center', 'flex-start']}>
       <Heading children="Muhammad Hamza" size={['md', 'xl']} />
       <Text
         textAlign={['center', 'left']}
-        children={`Hi, I am a full-stack developer.
-      Our mission is to provide quality content at reasonable price.
-      `}
+        children={`Hi, I am a full-stack web developer. I am the founder of SkillSurge. Our mission is to provide quality content at reasonable price.`}
       />
     </VStack>
   </Stack>

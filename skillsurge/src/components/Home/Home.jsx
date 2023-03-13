@@ -15,6 +15,7 @@ import introVideo from '../../assets/videos/intro.mp4';
 import { CgGoogle, CgYoutube } from 'react-icons/cg';
 import { SiCoursera, SiUdemy } from 'react-icons/si';
 import { DiAws } from 'react-icons/di';
+import poster from '../../assets/images/video-poster.jfif';
 import './home.css';
 
 const Home = () => {
@@ -79,6 +80,7 @@ const Home = () => {
 
       <div className="video-container">
         <video
+          poster={poster}
           controls
           controlsList="nodownload nofullscreen noremoteplayback"
           disablePictureInPicture

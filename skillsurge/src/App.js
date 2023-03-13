@@ -28,9 +28,13 @@ import toast, { Toaster } from 'react-hot-toast';
 import { loadUser } from './redux/actions/user';
 import { ProtectedRoute } from 'protected-route-react';
 import Loader from './components/Layout/Loader/Loader';
+import { useColorMode } from '@chakra-ui/react';
 
 function App() {
   const dispatch = useDispatch();
+
+  const { colorMode } = useColorMode();
+  const isDark = colorMode === 'dark';
 
   window.addEventListener('contextmenu', e => {
     e.preventDefault();
@@ -226,7 +230,14 @@ function App() {
             />
           </Routes>
           <Footer />
-          <Toaster />
+          <Toaster
+            toastOptions={{
+              style: {
+                color: isDark ? '#fff' : '#333',
+                background: isDark ? '#333' : '#fff',
+              },
+            }}
+          />
         </>
       )}
     </BrowserRouter>

@@ -89,7 +89,11 @@ const Profile = ({ user }) => {
 
   return (
     <Container minH={'95vh'} maxW="container.lg" py={'8'}>
-      <Heading children={'Profile'} m="8" textTransform={'uppercase'} />
+      <Heading
+        children={user?.role === 'admin' ? 'Admin Profile' : 'Profile'}
+        m="8"
+        textTransform={'uppercase'}
+      />
       <Stack
         justifyContent={'flex-start'}
         direction={['column', 'row']}
@@ -152,7 +156,9 @@ const Profile = ({ user }) => {
         </VStack>
       </Stack>
 
-      <Heading children="Playlist" size={'md'} my="8" />
+      {user?.role !== 'admin' && (
+        <Heading children="Playlist" size={'md'} my="8" />
+      )}
 
       {user?.playlist?.length > 0 && (
         <Stack
@@ -180,6 +186,31 @@ const Profile = ({ user }) => {
               </HStack>
             </VStack>
           ))}
+        </Stack>
+      )}
+
+      {user?.role === 'admin' && (
+        <Stack
+          direction={['column', 'row']}
+          alignItems={'center'}
+          flexWrap="wrap"
+          p="4"
+        >
+          <Link to="/admin/dashboard">
+            <Button colorScheme={'yellow'}>Admin Dashboard</Button>
+          </Link>
+
+          <Link to="/admin/courses">
+            <Button colorScheme={'yellow'}>Manage Courses</Button>
+          </Link>
+
+          <Link to="/admin/users">
+            <Button colorScheme={'yellow'}>Manage Users</Button>
+          </Link>
+
+          <Link to="/admin/create-course">
+            <Button colorScheme={'yellow'}>Create New Course</Button>
+          </Link>
         </Stack>
       )}
 

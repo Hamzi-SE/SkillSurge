@@ -1,4 +1,5 @@
 import {
+  Avatar,
   Box,
   Button,
   Grid,
@@ -74,6 +75,7 @@ const Users = () => {
             <Thead>
               <Tr>
                 <Th>ID</Th>
+                <Th>DP</Th>
                 <Th>Name</Th>
                 <Th>Email</Th>
                 <Th>Role</Th>
@@ -108,6 +110,12 @@ function Row({ item, updateUserRoleHandler, deleteUserHandler, loading }) {
   return (
     <Tr>
       <Td>#{item._id}</Td>
+      <Td>
+        <Box display="flex" justifyContent="center">
+          <Avatar src={item?.avatar?.url} size={'lg'} />
+        </Box>
+      </Td>
+
       <Td>{item.name}</Td>
       <Td>{item.email}</Td>
       <Td>{item.role}</Td>
