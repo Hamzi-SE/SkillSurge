@@ -20,14 +20,17 @@ cloudinary.v2.config({
 	api_secret: process.env.CLOUDINARY_CLIENT_SECRET,
 });
 
-// A cron job to generate new statistics on the first day of each month
-nodeCron.schedule("0 0 0 1 * *", async () => {
+// A cron job to generate new statistics on the second day of each month
+const job = nodeCron.schedule("0 0 0 2 * *", async () => {
 	try {
 		await Stats.create({});
 	} catch (error) {
 		console.log(error);
 	}
 });
+
+// Start the cron job
+job.start();
 
 // Starting the server
 app.listen(process.env.PORT, () => {
