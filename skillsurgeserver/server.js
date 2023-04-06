@@ -21,7 +21,7 @@ cloudinary.v2.config({
 });
 
 // A cron job to generate new statistics on the second day of each month
-const job = nodeCron.schedule("0 0 0 2 * *", async () => {
+const job = nodeCron.schedule("0 0 7 * *", async () => {
 	try {
 		await Stats.create({});
 	} catch (error) {
