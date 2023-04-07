@@ -53,6 +53,25 @@ export const courseRequest = catchAsyncError(async (req, res, next) => {
 	});
 });
 
+export const createStats = catchAsyncError(async (req, res, next) => {
+	const stats = await Stats.find({}).sort({ createdAt: "desc" }).limit(1);
+
+	const usersCount = stats[0].users;
+	const subscriptionsCount = stats[0].subscriptions;
+	const viewsCount = stats[0].views;
+
+	const newStats = await Stats.create({
+		users: usersCount,
+		subscriptions: subscriptionsCount,
+		views: viewsCount,
+	});
+
+	res.status(200).json({
+		success: true,
+		newStats,
+	});
+});
+
 export const getDashboardStats = catchAsyncError(async (req, res, next) => {
 	const stats = await Stats.find({}).sort({ createdAt: "desc" }).limit(12);
 
