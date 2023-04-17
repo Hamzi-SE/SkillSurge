@@ -22,8 +22,18 @@ const CourseCard = ({
   loading,
 }) => {
   return (
-    <VStack className="course" alignItems={['center', 'flex-start']}>
-      <Image src={imgSrc} alt={title} boxSize="60" objectFit={'contain'} />
+    <VStack
+      className="course"
+      alignItems={['center', 'flex-start']}
+      boxShadow={'sm'}
+    >
+      <Image
+        src={imgSrc}
+        alt={title}
+        boxSize="60"
+        objectFit={'contain'}
+        width={'100%'}
+      />
       <Heading
         textAlign={['center', 'left']}
         maxW="200px"

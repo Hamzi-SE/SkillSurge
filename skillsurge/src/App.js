@@ -26,7 +26,7 @@ import Users from './components/Admin/Users/Users';
 import { useDispatch, useSelector } from 'react-redux';
 import toast, { Toaster } from 'react-hot-toast';
 import { loadUser } from './redux/actions/user';
-import { ProtectedRoute } from 'protected-route-react';
+import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute';
 import Loader from './components/Layout/Loader/Loader';
 import { useColorMode } from '@chakra-ui/react';
 
