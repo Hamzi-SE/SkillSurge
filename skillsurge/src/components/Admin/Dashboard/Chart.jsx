@@ -23,9 +23,10 @@ ChartJS.register(
   Legend
 );
 
-export const LineChart = ({ views = [] }) => {
+export const LineChart = ({ views = [], users = [], subscriptions = [] }) => {
   const labels = getLastYearMonths();
   const options = {
+    tension: 0.2,
     responsive: true,
     plugins: {
       legend: {
@@ -45,7 +46,21 @@ export const LineChart = ({ views = [] }) => {
         label: 'Views',
         data: views,
         borderColor: 'rgba(107,70,193,0.5)',
-        backgroundColor: '#6b46c1',
+        backgroundColor: 'rgba(107,70,193,1)',
+      },
+
+      {
+        label: 'Users',
+        data: users,
+        borderColor: 'rgba(214,43,129,0.5)',
+        backgroundColor: 'rgba(214,43,129,1)',
+      },
+
+      {
+        label: 'Subscriptions',
+        data: subscriptions,
+        borderColor: 'rgba(0,255,0,0.5)',
+        backgroundColor: 'rgba(0,255,0,1)',
       },
     ],
   };

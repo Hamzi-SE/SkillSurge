@@ -135,12 +135,16 @@ const Dashboard = () => {
             <Heading
               textAlign={['center', 'left']}
               size={'md'}
-              children={'Views Graph'}
+              children={'Views, Users and Subscriptions Graph'}
               pt={['8', '0']}
               marginLeft={['0', '16']}
             />
 
-            <LineChart views={stats.map(stat => stat.views)} />
+            <LineChart
+              views={stats.map(stat => stat.views)}
+              users={stats.map(stat => stat.users)}
+              subscriptions={stats.map(stat => stat.subscriptions)}
+            />
           </Box>
 
           <Grid templateColumns={['1fr', '2fr 1fr']}>
