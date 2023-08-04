@@ -213,13 +213,26 @@ export const forgotPassword = catchAsyncError(async (req, res, next) => {
 		</div>
 	`
 
-	// send token via email
-	await sendEmail(user.email, 'Skill Surge Password Recovery', message)
+	// send token to user's email
+	try {
+		await sendEmail({
+			email: user.email,
+			subject: 'Skill Surge Password Recovery',
+			message,
+		})
 
-	res.status(200).json({
-		success: true,
-		message: `Password reset link sent to ${email}`,
-	})
+		res.status(200).json({
+			success: true,
+			message: `Password reset link sent to ${email}`,
+		})
+	} catch (error) {
+		user.resetPasswordToken = undefined
+		user.resetPasswordExpire = undefined
+
+		await user.save({ validateBeforeSave: false })
+
+		return next(new ErrorHandler(error?.message, 500))
+	}
 })
 
 export const resetPassword = catchAsyncError(async (req, res, next) => {
@@ -309,7 +322,8 @@ export const updateUserRole = catchAsyncError(async (req, res, next) => {
 
 	if (!user) return next(new ErrorHandler('User not found', 404))
 
-	if (user._id.toString() === req.user._id.toString()) return next(new ErrorHandler('You can not update your own role', 400))
+	if (user._id.toString() === req.user._id.toString())
+		return next(new ErrorHandler('You can not update your own role', 400))
 
 	if (user.role === 'user') user.role = 'admin'
 	else user.role = 'user'
@@ -327,7 +341,8 @@ export const deleteUser = catchAsyncError(async (req, res, next) => {
 
 	if (!user) return next(new ErrorHandler('User not found', 404))
 
-	if (user._id.toString() === req.user._id.toString()) return next(new ErrorHandler('You can not delete your own account', 400))
+	if (user._id.toString() === req.user._id.toString())
+		return next(new ErrorHandler('You can not delete your own account', 400))
 
 	if (user.avatar.public_id) {
 		await cloudinary.v2.uploader.destroy(user.avatar.public_id)
