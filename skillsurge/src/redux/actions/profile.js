@@ -25,7 +25,7 @@ export const updateProfile = (name, email) => async dispatch => {
   } catch (error) {
     dispatch({
       type: 'updateProfileFail',
-      payload: error.response.data.message,
+      payload: error?.response?.data?.message || "Something went wrong. Please try again.",
     });
   }
 };
@@ -49,7 +49,7 @@ export const updateProfilePicture = formData => async dispatch => {
   } catch (error) {
     dispatch({
       type: 'updateProfilePictureFail',
-      payload: error.response.data.message,
+      payload: error?.response?.data?.message || "Something went wrong. Please try again.",
     });
   }
 };
@@ -71,7 +71,7 @@ export const changePassword = (oldPassword, newPassword) => async dispatch => {
   } catch (error) {
     dispatch({
       type: 'changePasswordFail',
-      payload: error.response.data.message,
+      payload: error?.response?.data?.message || "Something went wrong. Please try again.",
     });
   }
 };
@@ -90,7 +90,7 @@ export const forgetPassword = email => async dispatch => {
   } catch (error) {
     dispatch({
       type: 'forgetPasswordFail',
-      payload: error.response.data.message,
+      payload: error?.response?.data?.message || "Something went wrong. Please try again.",
     });
   }
 };
@@ -109,7 +109,7 @@ export const resetPassword = (token, password) => async dispatch => {
   } catch (error) {
     dispatch({
       type: 'resetPasswordFail',
-      payload: error.response.data.message,
+      payload: error?.response?.data?.message || "Something went wrong. Please try again.",
     });
   }
 };
@@ -130,7 +130,7 @@ export const addToPlaylist = id => async dispatch => {
   } catch (error) {
     dispatch({
       type: 'addToPlaylistFail',
-      payload: error.response.data.message,
+      payload: error?.response?.data?.message || "Something went wrong. Please try again.",
     });
   }
 };
@@ -150,7 +150,7 @@ export const removeFromPlaylist = id => async dispatch => {
   } catch (error) {
     dispatch({
       type: 'removeFromPlaylistFail',
-      payload: error.response.data.message,
+      payload: error?.response?.data?.message || "Something went wrong. Please try again.",
     });
   }
 };
