@@ -1,49 +1,52 @@
 import { createReducer } from '@reduxjs/toolkit';
 
-export const courseReducer = createReducer(
-  { courses: [], lectures: [] },
-  {
-    allCoursesRequest: state => {
+const initialState = {
+  loading: false,
+  courses: [],
+  lectures: [],
+  message: null,
+  error: null,
+};
+
+export const courseReducer = createReducer(initialState, builder =>
+  builder
+    .addCase('allCoursesRequest', state => {
       state.loading = true;
-    },
-    allCoursesSuccess: (state, action) => {
+    })
+    .addCase('allCoursesSuccess', (state, action) => {
       state.loading = false;
       state.courses = action.payload;
-    },
-    allCoursesFail: (state, action) => {
+    })
+    .addCase('allCoursesFail', (state, action) => {
       state.loading = false;
       state.error = action.payload;
-    },
-
-    getCourseRequest: state => {
+    })
+    .addCase('getCourseRequest', state => {
       state.loading = true;
-    },
-    getCourseSuccess: (state, action) => {
+    })
+    .addCase('getCourseSuccess', (state, action) => {
       state.loading = false;
       state.lectures = action.payload;
-    },
-    getCourseFail: (state, action) => {
+    })
+    .addCase('getCourseFail', (state, action) => {
       state.loading = false;
       state.error = action.payload;
-    },
-
-    addToPlaylistRequest: state => {
+    })
+    .addCase('addToPlaylistRequest', state => {
       state.loading = true;
-    },
-    addToPlaylistSuccess: (state, action) => {
+    })
+    .addCase('addToPlaylistSuccess', (state, action) => {
       state.loading = false;
       state.message = action.payload;
-    },
-    addToPlaylistFail: (state, action) => {
+    })
+    .addCase('addToPlaylistFail', (state, action) => {
       state.loading = false;
       state.error = action.payload;
-    },
-
-    clearError: state => {
+    })
+    .addCase('clearError', state => {
       state.error = null;
-    },
-    clearMessage: state => {
+    })
+    .addCase('clearMessage', state => {
       state.message = null;
-    },
-  }
+    })
 );

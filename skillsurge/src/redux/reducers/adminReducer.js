@@ -1,12 +1,28 @@
 import { createReducer } from '@reduxjs/toolkit';
 
-export const adminReducer = createReducer(
-  {},
-  {
-    getAdminDashboardStatsRequest: state => {
+const initialState = {
+  loading: false,
+  stats: null,
+  usersCount: null,
+  subscriptionsCount: null,
+  viewsCount: null,
+  usersProfit: null,
+  subscriptionsProfit: null,
+  viewsProfit: null,
+  usersPercentage: null,
+  subscriptionsPercentage: null,
+  viewsPercentage: null,
+  users: [],
+  message: null,
+  error: null,
+};
+
+export const adminReducer = createReducer(initialState, builder =>
+  builder
+    .addCase('getAdminDashboardStatsRequest', state => {
       state.loading = true;
-    },
-    getAdminDashboardStatsSuccess: (state, action) => {
+    })
+    .addCase('getAdminDashboardStatsSuccess', (state, action) => {
       state.loading = false;
       state.stats = action.payload.stats;
       state.usersCount = action.payload.usersCount;
@@ -18,101 +34,92 @@ export const adminReducer = createReducer(
       state.usersPercentage = action.payload.usersPercentage;
       state.subscriptionsPercentage = action.payload.subscriptionsPercentage;
       state.viewsPercentage = action.payload.viewsPercentage;
-    },
-    getAdminDashboardStatsFail: (state, action) => {
+    })
+    .addCase('getAdminDashboardStatsFail', (state, action) => {
       state.loading = false;
       state.error = action.payload;
-    },
-
-    getAllUsersRequest: state => {
+    })
+    .addCase('getAllUsersRequest', state => {
       state.loading = true;
-    },
-    getAllUsersSuccess: (state, action) => {
+    })
+    .addCase('getAllUsersSuccess', (state, action) => {
       state.loading = false;
       state.users = action.payload;
-    },
-    getAllUsersFail: (state, action) => {
+    })
+    .addCase('getAllUsersFail', (state, action) => {
       state.loading = false;
       state.error = action.payload;
-    },
-
-    updateUserRoleRequest: state => {
+    })
+    .addCase('updateUserRoleRequest', state => {
       state.loading = true;
-    },
-    updateUserRoleSuccess: (state, action) => {
+    })
+    .addCase('updateUserRoleSuccess', (state, action) => {
       state.loading = false;
       state.message = action.payload;
-    },
-    updateUserRoleFail: (state, action) => {
+    })
+    .addCase('updateUserRoleFail', (state, action) => {
       state.loading = false;
       state.error = action.payload;
-    },
-
-    deleteUserRequest: state => {
+    })
+    .addCase('deleteUserRequest', state => {
       state.loading = true;
-    },
-    deleteUserSuccess: (state, action) => {
+    })
+    .addCase('deleteUserSuccess', (state, action) => {
       state.loading = false;
       state.message = action.payload;
-    },
-    deleteUserFail: (state, action) => {
+    })
+    .addCase('deleteUserFail', (state, action) => {
       state.loading = false;
       state.error = action.payload;
-    },
-
-    createCourseRequest: state => {
+    })
+    .addCase('createCourseRequest', state => {
       state.loading = true;
-    },
-    createCourseSuccess: (state, action) => {
+    })
+    .addCase('createCourseSuccess', (state, action) => {
       state.loading = false;
       state.message = action.payload;
-    },
-    createCourseFail: (state, action) => {
+    })
+    .addCase('createCourseFail', (state, action) => {
       state.loading = false;
       state.error = action.payload;
-    },
-
-    deleteCourseRequest: state => {
+    })
+    .addCase('deleteCourseRequest', state => {
       state.loading = true;
-    },
-    deleteCourseSuccess: (state, action) => {
+    })
+    .addCase('deleteCourseSuccess', (state, action) => {
       state.loading = false;
       state.message = action.payload;
-    },
-    deleteCourseFail: (state, action) => {
+    })
+    .addCase('deleteCourseFail', (state, action) => {
       state.loading = false;
       state.error = action.payload;
-    },
-
-    addLectureRequest: state => {
+    })
+    .addCase('addLectureRequest', state => {
       state.loading = true;
-    },
-    addLectureSuccess: (state, action) => {
+    })
+    .addCase('addLectureSuccess', (state, action) => {
       state.loading = false;
       state.message = action.payload;
-    },
-    addLectureFail: (state, action) => {
+    })
+    .addCase('addLectureFail', (state, action) => {
       state.loading = false;
       state.error = action.payload;
-    },
-
-    deleteLectureRequest: state => {
+    })
+    .addCase('deleteLectureRequest', state => {
       state.loading = true;
-    },
-    deleteLectureSuccess: (state, action) => {
+    })
+    .addCase('deleteLectureSuccess', (state, action) => {
       state.loading = false;
       state.message = action.payload;
-    },
-    deleteLectureFail: (state, action) => {
+    })
+    .addCase('deleteLectureFail', (state, action) => {
       state.loading = false;
       state.error = action.payload;
-    },
-
-    clearError: state => {
+    })
+    .addCase('clearError', state => {
       state.error = null;
-    },
-    clearMessage: state => {
+    })
+    .addCase('clearMessage', state => {
       state.message = null;
-    },
-  }
+    })
 );

@@ -1,58 +1,64 @@
 import { createReducer } from '@reduxjs/toolkit';
 
-export const subscriptionReducer = createReducer(
-  {},
-  {
-    stripePublishableKeyRequest: state => {
+const initialState = {
+  loading: false,
+  stripePublishableKey: null,
+  subscription: null,
+  message: null,
+  error: null,
+};
+
+export const subscriptionReducer = createReducer(initialState, builder => {
+  builder
+    .addCase('stripePublishableKeyRequest', state => {
       state.loading = true;
-    },
-    stripePublishableKeySuccess: (state, action) => {
+    })
+    .addCase('stripePublishableKeySuccess', (state, action) => {
       state.loading = false;
       state.stripePublishableKey = action.payload;
-    },
-    stripePublishableKeyFail: (state, action) => {
+    })
+    .addCase('stripePublishableKeyFail', (state, action) => {
       state.loading = false;
       state.error = action.payload;
-    },
-    createSubscriptionRequest: state => {
+    })
+    .addCase('createSubscriptionRequest', state => {
       state.loading = true;
-    },
-    createSubscriptionSuccess: (state, action) => {
+    })
+    .addCase('createSubscriptionSuccess', (state, action) => {
       state.loading = false;
       state.subscription = action.payload.subscriptionId;
       state.message = action.payload.message;
-    },
-    createSubscriptionFail: (state, action) => {
+    })
+    .addCase('createSubscriptionFail', (state, action) => {
       state.loading = false;
       state.error = action.payload;
-    },
-    cancelSubscriptionRequest: state => {
+    })
+    .addCase('cancelSubscriptionRequest', state => {
       state.loading = true;
-    },
-    cancelSubscriptionSuccess: (state, action) => {
+    })
+    .addCase('cancelSubscriptionSuccess', (state, action) => {
       state.loading = false;
       state.message = action.payload;
-    },
-    cancelSubscriptionFail: (state, action) => {
+    })
+    .addCase('cancelSubscriptionFail', (state, action) => {
       state.loading = false;
       state.error = action.payload;
-    },
-    checkSubscriptionRequest: state => {
+    })
+    .addCase('checkSubscriptionRequest', state => {
       state.loading = true;
-    },
-    checkSubscriptionSuccess: (state, action) => {
+    })
+    .addCase('checkSubscriptionSuccess', (state, action) => {
       state.loading = false;
       state.message = action.payload;
-    },
-    checkSubscriptionFail: (state, action) => {
+    })
+    .addCase('checkSubscriptionFail', (state, action) => {
       state.loading = false;
       state.error = action.payload;
-    },
-    clearError: state => {
+    })
+    .addCase('clearError', state => {
       state.error = null;
-    },
-    clearMessage: state => {
+    })
+    .addCase('clearMessage', state => {
       state.message = null;
-    },
-  }
-);
+    });
+});

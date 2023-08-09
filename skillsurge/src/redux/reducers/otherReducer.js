@@ -1,37 +1,39 @@
 import { createReducer } from '@reduxjs/toolkit';
 
-export const otherReducer = createReducer(
-  {},
-  {
-    contactRequest: state => {
+const initialState = {
+  loading: false,
+  message: null,
+  error: null,
+};
+
+export const otherReducer = createReducer(initialState, builder =>
+  builder
+    .addCase('contactRequest', state => {
       state.loading = true;
-    },
-    contactSuccess: (state, action) => {
+    })
+    .addCase('contactSuccess', (state, action) => {
       state.loading = false;
       state.message = action.payload;
-    },
-    contactFail: (state, action) => {
+    })
+    .addCase('contactFail', (state, action) => {
       state.loading = false;
       state.error = action.payload;
-    },
-
-    courseRequestRequest: state => {
+    })
+    .addCase('courseRequestRequest', state => {
       state.loading = true;
-    },
-    courseRequestSuccess: (state, action) => {
+    })
+    .addCase('courseRequestSuccess', (state, action) => {
       state.loading = false;
       state.message = action.payload;
-    },
-    courseRequestFail: (state, action) => {
+    })
+    .addCase('courseRequestFail', (state, action) => {
       state.loading = false;
       state.error = action.payload;
-    },
-
-    clearError: state => {
+    })
+    .addCase('clearError', state => {
       state.error = null;
-    },
-    clearMessage: state => {
+    })
+    .addCase('clearMessage', state => {
       state.message = null;
-    },
-  }
+    })
 );

@@ -20,7 +20,7 @@ export const login = (email, password) => async dispatch => {
 
     dispatch({ type: 'loginSuccess', payload: data });
   } catch (error) {
-    dispatch({ type: 'loginFail', payload: error.response.data.message });
+    dispatch({ type: 'loginFail', payload: error?.response?.data?.message });
   }
 };
 
@@ -37,7 +37,7 @@ export const register = formData => async dispatch => {
 
     dispatch({ type: 'registerSuccess', payload: data });
   } catch (error) {
-    dispatch({ type: 'registerFail', payload: error.response.data.message });
+    dispatch({ type: 'registerFail', payload: error?.response?.data?.message });
   }
 };
 
@@ -51,7 +51,7 @@ export const loadUser = () => async dispatch => {
 
     dispatch({ type: 'loadUserSuccess', payload: data.user });
   } catch (error) {
-    dispatch({ type: 'loadUserFail', payload: error.response.data.message });
+    dispatch({ type: 'loadUserFail', payload: '' });
   }
 };
 
@@ -65,6 +65,6 @@ export const logout = () => async dispatch => {
 
     dispatch({ type: 'logoutSuccess', payload: data.message });
   } catch (error) {
-    dispatch({ type: 'logoutFail', payload: error.response.data.message });
+    dispatch({ type: 'logoutFail', payload: error?.response?.data?.message });
   }
 };
