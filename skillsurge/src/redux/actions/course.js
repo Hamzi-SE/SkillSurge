@@ -15,7 +15,7 @@ export const getAllCourses =
     } catch (error) {
       dispatch({
         type: 'allCoursesFail',
-        payload: error.response.data.message,
+        payload: error?.response?.data?.message,
       });
     }
   };
@@ -32,7 +32,7 @@ export const getCourseLectures = id => async dispatch => {
   } catch (error) {
     dispatch({
       type: 'getCourseFail',
-      payload: error.response.data.message,
+      payload: error?.response?.data?.message,
     });
   }
 };

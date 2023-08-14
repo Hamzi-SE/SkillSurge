@@ -17,7 +17,7 @@ export const createCourse = formData => async dispatch => {
   } catch (error) {
     dispatch({
       type: 'createCourseFail',
-      payload: error.response.data.message,
+      payload: error?.response?.data?.message,
     });
   }
 };
@@ -34,7 +34,7 @@ export const deleteCourse = id => async dispatch => {
   } catch (error) {
     dispatch({
       type: 'deleteCourseFail',
-      payload: error.response.data.message,
+      payload: error?.response?.data?.message,
     });
   }
 };
@@ -59,7 +59,7 @@ export const addLecture = (courseId, lectureData) => async dispatch => {
   } catch (error) {
     dispatch({
       type: 'addLectureFail',
-      payload: error.response.data.message,
+      payload: error?.response?.data?.message,
     });
   }
 };
@@ -79,7 +79,7 @@ export const deleteLecture = (courseId, lectureId) => async dispatch => {
   } catch (error) {
     dispatch({
       type: 'deleteLectureFail',
-      payload: error.response.data.message,
+      payload: error?.response?.data?.message,
     });
   }
 };
@@ -96,7 +96,7 @@ export const getAllUsers = () => async dispatch => {
   } catch (error) {
     dispatch({
       type: 'getAllUsersFail',
-      payload: error.response.data.message,
+      payload: error?.response?.data?.message,
     });
   }
 };
@@ -113,7 +113,7 @@ export const deleteUser = id => async dispatch => {
   } catch (error) {
     dispatch({
       type: 'deleteUserFail',
-      payload: error.response.data.message,
+      payload: error?.response?.data?.message,
     });
   }
 };
@@ -134,7 +134,7 @@ export const updateUserRole = id => async dispatch => {
   } catch (error) {
     dispatch({
       type: 'updateUserRoleFail',
-      payload: error.response.data.message,
+      payload: error?.response?.data?.message,
     });
   }
 };
@@ -151,7 +151,7 @@ export const getAdminDashboardStats = () => async dispatch => {
   } catch (error) {
     dispatch({
       type: 'getAdminDashboardStatsFail',
-      payload: error.response.data.message,
+      payload: error?.response?.data?.message,
     });
   }
 };

@@ -19,7 +19,7 @@ export const getStripePublishableKey = () => async dispatch => {
   } catch (error) {
     dispatch({
       type: 'stripePublishableKeyFail',
-      payload: error.response.data.message,
+      payload: error?.response?.data?.message,
     });
   }
 };
@@ -42,7 +42,7 @@ export const checkSubscription = () => async dispatch => {
   } catch (error) {
     dispatch({
       type: 'checkSubscriptionFail',
-      payload: error.response.data.message,
+      payload: error?.response?.data?.message,
     });
   }
 };
@@ -87,7 +87,7 @@ export const createSubscription =
     } catch (error) {
       dispatch({
         type: 'createSubscriptionFail',
-        payload: error.response.data.message,
+        payload: error?.response?.data?.message,
       });
     }
   };
@@ -110,7 +110,7 @@ export const cancelSubscription = () => async dispatch => {
   } catch (error) {
     dispatch({
       type: 'cancelSubscriptionFail',
-      payload: error.response.data.message,
+      payload: error?.response?.data?.message,
     });
   }
 };
