@@ -36,12 +36,19 @@ const job = nodeCron.schedule("0 0 7 * *", async () => {
 // Start the cron job
 job.start();
 
-// Starting the server
-app.listen(process.env.PORT, () => {
-	console.log(`Server running on port ${process.env.PORT}`);
-});
+// Flag to track if the server is already started
+let serverStarted = false;
 
-export default function handler(request, response) {
-	const { name = 'World' } = request.query;
-	return response.send(`Hello ${name}!`);
-  }
+// Starting the server function
+function startServer() {
+	if (!serverStarted) {
+		serverStarted = true;
+		const server = app.listen(process.env.PORT, () => {
+			console.log(`Server running on port ${process.env.PORT}`);
+		});
+		return server;
+	}
+}
+
+// Start the server
+export default startServer();
