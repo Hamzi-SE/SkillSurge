@@ -1,9 +1,13 @@
+import cloudinary from "cloudinary";
+import { config } from 'dotenv';
+import nodeCron from "node-cron";
+import Stripe from "stripe";
 import app from "./app.js";
 import connectDatabase from "./config/database.js";
-import cloudinary from "cloudinary";
-import Stripe from "stripe";
-import nodeCron from "node-cron";
 import Stats from "./models/Stats.js";
+
+// dotenv config
+config({ path: './config/config.env' })
 
 // MongoDB connection
 connectDatabase();
@@ -33,6 +37,11 @@ const job = nodeCron.schedule("0 0 7 * *", async () => {
 job.start();
 
 // Starting the server
-export default app.listen(process.env.PORT, () => {
+app.listen(process.env.PORT, () => {
 	console.log(`Server running on port ${process.env.PORT}`);
 });
+
+export default function handler(request, response) {
+	const { name = 'World' } = request.query;
+	return response.send(`Hello ${name}!`);
+  }
