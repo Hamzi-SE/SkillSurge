@@ -33,6 +33,8 @@ const job = nodeCron.schedule("0 0 7 * *", async () => {
 job.start();
 
 // Starting the server
-app.listen(process.env.PORT, () => {
+const server = app.listen(process.env.PORT, () => {
 	console.log(`Server running on port ${process.env.PORT}`);
 });
+
+export default server;
