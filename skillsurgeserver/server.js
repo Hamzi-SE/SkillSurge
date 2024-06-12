@@ -37,6 +37,22 @@ const job = nodeCron.schedule("0 0 7 * *", async () => {
 job.start();
 
 // Starting the server
-app.listen(process.env.PORT, () => {
+const server = app.listen(process.env.PORT, () => {
 	console.log(`Server running on port ${process.env.PORT}`);
 });
+
+// Handle unhandled promise rejections
+process.on("unhandledRejection", (error, promise) => {
+	console.log(`Error: ${error.message}`);
+	// Close server & exit process
+	server.close(() => process.exit(1));
+});
+
+// Handle uncaught exceptions
+process.on("uncaughtException", (error, promise) => {
+	console.log(`Error: ${error.message}`);
+	// Close server & exit process
+	server.close(() => process.exit(1));
+});
+
+export default app;
