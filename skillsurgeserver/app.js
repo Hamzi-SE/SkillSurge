@@ -14,7 +14,7 @@ app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 app.use(cookieParser())
 const corsConfig = {
-	origin: "*",
+	origin: process.env.FRONTEND_URL,
 	credentials: true, // mandatory
 	methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
 }
