@@ -201,7 +201,7 @@ export const forgotPassword = catchAsyncError(async (req, res, next) => {
 
 	const message = `
 		<div style="text-align: center;">
-			<a href="https://skillsurge.vercel.app/"><img src="https://i.ibb.co/m9wK4S3/Logo.png" style="width: 50%;" alt="Logo" border="0"></a>
+			<a href=${process.env.FRONTEND_URL}><img src="https://i.ibb.co/m9wK4S3/Logo.png" style="width: 50%;" alt="Logo" border="0"></a>
 			<h1>You have requested a password reset</h1>
 			<p>Please go to the following link to reset your password</p>
 			<a href=${resetPasswordUrl} target="_blank">Click here to reset your password</a>
